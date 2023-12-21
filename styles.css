@@ -1,0 +1,22 @@
+.Chess_row_dark {
+    height: 8vh;
+    display: flex;
+    align-items: center;
+    background-color: #956d4f;
+}
+.Chess_row_grey {
+    display: flex;
+    height: 8vh;
+    align-items: center;
+    background-color: #b58863;
+}
+.Chess_row_white {
+    display: flex;
+    height: 8vh;
+    align-items: center;
+    background-color: #f0d9b5;
+}
+.ChessBoard{
+    width: 100%;
+    height: 100vh;
+}

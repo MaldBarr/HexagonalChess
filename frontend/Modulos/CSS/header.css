@@ -1,0 +1,32 @@
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #0f0f0f;
+    display: flex;
+    padding: 0;
+    height: 8vh;
+    align-items: center;
+}
+
+header img {
+    max-height: 8vh;
+}
+
+.header-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.header-menu li {
+    text-align: center;
+    margin: 5px;
+}
+
+li a {
+    padding: 0;
+    margin: 0;
+}

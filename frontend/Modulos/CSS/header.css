@@ -5,13 +5,30 @@ header {
     z-index: 1000;
     background-color: #0f0f0f;
     display: flex;
+    justify-content: space-between;
     padding: 0;
     height: 8vh;
     align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 header img {
     max-height: 8vh;
+}
+
+header h1{
+    margin-right: 20px;
+    max-width: fit-content;
+}
+
+li a:hover ,
+a h1:hover ,
+a:hover {
+    color:#7FA650;
+}
+
+.active {
+    color:#7FA650;
 }
 
 .header-menu {
@@ -23,10 +40,29 @@ header img {
 
 .header-menu li {
     text-align: center;
-    margin: 5px;
+    margin-left: 20px;
 }
 
 li a {
+    font-weight: 600;
     padding: 0;
     margin: 0;
+}
+
+.play-button {
+    width: 100px;
+    height: 50px;
+    background-color: #7FA650;
+    color: #fff;
+    padding: 5px 10px;
+    text-decoration: none;
+    margin-right: auto;
+}
+
+.play-button:hover {
+    border-color: #fff;
+}
+
+a {
+    max-width: fit-content;
 }

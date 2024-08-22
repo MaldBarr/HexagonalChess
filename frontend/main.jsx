@@ -6,6 +6,7 @@ import App from './App.jsx';
 import Reglas from './Paginas/Reglas.jsx';
 import AboutUs from './Paginas/Nosotros.jsx';
 import Cuenta from './Paginas/Cuenta.jsx';
+import Salas from './Paginas/Salas.jsx';
 
 function Main() {
   let location = useLocation();
@@ -13,9 +14,10 @@ function Main() {
   return (
       <Routes location={location}>
         <Route path="/" element={<App />} />
-        <Route path="/rules" element={<Reglas />} />
+        <Route path="/Rules" element={<Reglas />} />
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/Account" element={<Cuenta />} />
+        <Route path='/Salas' element={<Salas />} />
       </Routes>
   );
 }

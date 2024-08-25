@@ -14,7 +14,11 @@ function Reglas() {
                 <section>
                     <h2>Nuevas posiciones iniciales</h2>
                     <p>En esta versión del juego, las posiciones iniciales se adaptan al siguiente formato: (ver imagen)</p>
-                    <p>Como podemos observar, </p>
+                    <p>Como podemos observar, el estilo del tablero es un hexagono de 91 casillas hexagonales pequeñas.</p>
+                    <p>Las posiciones iniciales se asemejan al del tablero clasico pero con ciertas modificaciones, por ejemplo:</p>
+                    <p>1. Los peones forman una estructura defensiva en sus posiciones iniciales</p>
+                    <p>2. 3 alfiles cubren la columna central del tablero</p>
+                    <p>3. Las torres se cubren detras de 2 peones</p>
                 </section>
                 <section className='SecImagen'>
                     <img className='RulesIMG' src="/setup.png" alt="Tablero hexagonal" />

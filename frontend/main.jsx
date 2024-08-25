@@ -7,6 +7,8 @@ import Reglas from './Paginas/Reglas.jsx';
 import AboutUs from './Paginas/Nosotros.jsx';
 import Cuenta from './Paginas/Cuenta.jsx';
 import Salas from './Paginas/Salas.jsx';
+import Registro from './Modulos/Registro.jsx';
+import Login from './Modulos/Login.jsx';
 
 function Main() {
   let location = useLocation();
@@ -18,6 +20,8 @@ function Main() {
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/Account" element={<Cuenta />} />
         <Route path='/Salas' element={<Salas />} />
+        <Route path="/Registro" element={<Registro />} />
+        <Route path="/Login" element={<Login />} />
       </Routes>
   );
 }

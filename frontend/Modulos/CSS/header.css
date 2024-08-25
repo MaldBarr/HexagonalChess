@@ -29,6 +29,7 @@ a:hover {
 
 .active {
     color:#7FA650;
+    font-weight: 800;
 }
 
 .header-menu {

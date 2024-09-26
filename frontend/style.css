@@ -33,7 +33,8 @@ body {
   display: flex;
   place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 92vh;
+  padding-top: 8vh;
 }
 
 h1 {
@@ -133,4 +134,30 @@ button:focus-visible {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.Images{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.BoardIMG {
+  max-height: 80%;
+  max-width: 70vh;
+  pointer-events: none;
+  @media screen and (max-width: 768px) {
+    max-width: 100%;
+  }
+}
+
+.forfeit-button{
+  max-width: 100px;
+    max-height: 50px;
+    background-color: #FF0000;
+    color: #fff;
+    padding: 5px 10px;
+    text-decoration: none;
+    margin-right: auto;
 }

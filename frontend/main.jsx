@@ -9,6 +9,7 @@ import Cuenta from './Paginas/Cuenta.jsx';
 import Salas from './Paginas/Salas.jsx';
 import Registro from './Modulos/Registro.jsx';
 import Login from './Modulos/Login.jsx';
+import Juego from './Paginas/Juego.jsx';
 
 function Main() {
   let location = useLocation();
@@ -22,6 +23,7 @@ function Main() {
         <Route path='/Salas' element={<Salas />} />
         <Route path="/Registro" element={<Registro />} />
         <Route path="/Login" element={<Login />} />
+        <Route path="/Play" element={<Juego />} />
       </Routes>
   );
 }

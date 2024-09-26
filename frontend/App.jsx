@@ -1,7 +1,8 @@
 import React from 'react';
 import './style.css'
-import javascriptLogo from './javascript.svg'
+import viteLogo from '/vite.svg'
 import Logo from './Figuras/g-queen.png'
+import gif from './public/Interface.gif'
 
 import {useState} from 'react'
 import {Link} from 'react-router-dom';
@@ -23,13 +24,9 @@ function App() {
             Tambien puedes revisar las reglas del juego en la seccion de reglas.<br /><br />
           </p>
         </section>
-        <section>
-          <a href="https://vitejs.dev" target="_blank">
+        <section className='Images'>
             <img src={Logo} className="logo"/>
-          </a>
-          <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-            <img src={javascriptLogo} className="logo vanilla" alt="JavaScript logo" />
-          </a>
+            <img src={viteLogo} className="logo vanilla" alt="JavaScript logo" />
         </section>
       </div>
     </>

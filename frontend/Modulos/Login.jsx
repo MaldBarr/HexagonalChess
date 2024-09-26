@@ -6,15 +6,18 @@ import './CSS/Login.css'
 
 function Login() {
     return (
-        <div>
-            <Link to="/">Inicio</Link>
-            <h1>Iniciar sesión</h1>
-            <form>
-                <input type="text" placeholder="Correo" required />
-                <input type="password" placeholder="Contraseña" required />
-                <button type="submit">Iniciar sesión</button>
-            </form>
-            <p>¿No tienes una cuenta? <Link to="/Registro">Registrate</Link></p>
+        <div className="Parent">
+            <div className="Container">
+                <Link to="/">Inicio</Link>
+                <h1>Iniciar sesión</h1>
+                <form>
+                    <input type="text" placeholder="Correo" required />
+                    <input type="password" placeholder="Contraseña" required />
+                    <button type="submit">Iniciar sesión</button>
+                </form>
+                <p>¿No tienes una cuenta? <Link to="/Registro">Registrate</Link></p>
+                <p>Olvidaste tu Contraseña</p>
+            </div>
         </div>
     )
 }

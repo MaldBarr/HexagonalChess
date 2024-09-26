@@ -10,6 +10,7 @@ function Salas() {
         <div>
             <Header/>
             <h1>Salas disponibles</h1>
+            <Link to="/Play"><button className="play-button">Jugar</button></Link>
         </div>
     )
 }

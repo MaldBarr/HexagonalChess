@@ -5,18 +5,20 @@ import FetchPaises from './FetchPaises.jsx';
 
 function register() {
     return (
-        <div>
-            <Link to="/">Inicio</Link>
-            <h1>Registro</h1>
-            <form>
-                <input type="text" placeholder="Nombre de usuario" required />
-                <input type="email" placeholder="Correo electronico" required />
-                <FetchPaises/>
-                <input type="password" placeholder="Contraseña" required />
-                <input type="password" placeholder="Confirmar contraseña" required />
-                <button type="submit">Registrarse</button>
-            </form>
-            <p>¿Ya tienes una cuenta? <Link to="/Login">Inicia sesión</Link></p>
+        <div className="Parent">
+            <div className="Container">
+                <Link to="/">Inicio</Link>
+                <h1>Registro</h1>
+                <form>
+                    <input type="text" placeholder="Nombre de usuario" required />
+                    <input type="email" placeholder="Correo electronico" required />
+                    <FetchPaises/>
+                    <input type="password" placeholder="Contraseña" required />
+                    <input type="password" placeholder="Confirmar contraseña" required />
+                    <button type="submit">Registrarse</button>
+                </form>
+                <p>¿Ya tienes una cuenta? <Link to="/Login">Inicia sesión</Link></p>
+            </div>
         </div>
     )
 } 

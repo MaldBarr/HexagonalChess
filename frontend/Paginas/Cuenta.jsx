@@ -10,8 +10,8 @@ function Cuenta() {
             <Header />
             <h1>Cuenta</h1>
             <p>En esta sección se encuentran las opciones de cuenta</p>
-            <Link to="/Login">Iniciar sesión</Link>
-            <Link to="/Registro">Registrarse</Link>
+            <Link to="/Login"><h3>Iniciar sesión</h3></Link>
+            <Link to="/Registro"><h3>Registrarse</h3></Link>
         </div>
     )
 }

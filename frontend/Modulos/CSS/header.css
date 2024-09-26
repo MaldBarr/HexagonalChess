@@ -11,6 +11,59 @@ header {
     align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.menu-icon {
+    display: none;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.header-menu {
+    display: flex;
+    list-style: none;
+}
+
+.header-menu li {
+    margin: 0 10px;
+}
+
+.header-menu a {
+    text-decoration: none;
+    color: white;
+}
+
+.header-menu a.active {
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        display: none;
+    }
+    .menu-icon {
+        padding-right: 10px;
+        display: flex;
+        flex-direction: row-reverse;
+    }
+
+    .header-menu {
+        display: none !important; 
+        flex-direction: column;
+        position: absolute;
+        top: 8vh;
+        right: 0;
+        background-color: #0f0f0f;
+        width: 100%;
+        text-align: center;
+    }
+
+    .header-menu.open {
+        display: flex !important;
+    }
+
+    .header-menu li {
+        margin: 10px 0;
+    }
+}
 
 header img {
     max-height: 8vh;
@@ -28,7 +81,7 @@ a:hover {
 }
 
 .active {
-    color:#7FA650;
+    color:#7FA650 !important;
     font-weight: 800;
 }
 
@@ -41,7 +94,7 @@ a:hover {
 
 .header-menu li {
     text-align: center;
-    margin-left: 20px;
+    margin-left: 5px;
 }
 
 li a {
@@ -51,8 +104,8 @@ li a {
 }
 
 .play-button {
-    width: 100px;
-    height: 50px;
+    max-width: 100px;
+    max-height: 50px;
     background-color: #7FA650;
     color: #fff;
     padding: 5px 10px;
@@ -66,4 +119,6 @@ li a {
 
 a {
     max-width: fit-content;
+    padding-left: 0px;
+    font-size: auto;
 }

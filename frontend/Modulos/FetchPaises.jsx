@@ -8,7 +8,7 @@ function fetchPaises() {
     }, []);
     return (
         <>
-            <select id={styles.sel_regiones} required>
+            <select id="pais" required>
                 <option value="" disabled selected>Seleccione un país</option>
                 {paises.map((data,i) => (
                     <option value={i} key={i}>

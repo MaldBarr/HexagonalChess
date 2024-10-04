@@ -4,10 +4,14 @@ import './CSS/Login.css';
 import FetchPaises from './FetchPaises.jsx';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import $ from 'jquery';
+
+var data;
 
 function register() {
     axios.get('http://localhost:3000/Registro').then((response) => {
         console.log(response.data);
+        data = response.data;
     }).catch((error) => {
         console.log(error);
     });
@@ -16,6 +20,7 @@ function register() {
     const handleSubmit = (event) => {
         event.preventDefault();
         if(validateRegister()){
+            alert("Registro exitoso");
             navigate("/Login");
         }
     }
@@ -51,13 +56,24 @@ function validateRegister(){
     if(nombre.length < 6){
         alert("El nombre de usuario debe tener al menos 6 caracteres");
     } else {
-        numCosasVerificadas++;
+        data.forEach(element => {
+            if(element.username == nombre){
+                alert("El nombre de usuario no esta disponible");
+            } else {
+                numCosasVerificadas++;
+            }
+        });
     }
-
     if(!validarCorreoElectronico(email)){
         alert("Correo electronico invalido");
     } else {
-        numCosasVerificadas++;
+        data.forEach(element => {
+            if(element.email == email){
+                alert("El correo ya esta en uso");
+            } else {
+                numCosasVerificadas++;
+            }
+        });
     }
 
     if(pais == null){
@@ -81,13 +97,15 @@ function validateRegister(){
         numCosasVerificadas++;
     }
 
+    console.log("numCosasVerificadas: "+numCosasVerificadas);
+
     if(numCosasVerificadas == 5){
-        axios.post('http://localhost:3000/Registro', {data: {
+        axios.put('http://localhost:3000/Registro', {
                 username: nombre,
                 email: email,
-                pais: pais,
-                password: contra
-            }}).then((response) => {
+                password: contra,
+                pais: pais
+            }).then((response) => {
                 console.log("datos: "+response.data);
             }).catch((error) => {
                 console.log(error);

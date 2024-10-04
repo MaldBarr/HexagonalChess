@@ -29,3 +29,24 @@ app.listen(configuracion, function () {
 app.get('/', function (req, res) {
     console.log('GET /');
 });
+app.put("/Registro", JsonParser, function (req, res) {
+    var username = req.body.username;
+    var email = req.body.email;
+    var password = req.body.password;
+    var pais = req.body.pais;
+    connection.query('INSERT INTO usuarios(username,email,password,pais) values(?,?,SHA1(?),?)', [username, email, password, pais], function (err, rows, fields) {
+        res.send(rows);
+    });
+});
+app.post("/Login", JsonParser, function (req, res) {
+    var email = req.body.email;
+    var password = req.body.password;
+    connection.query('SELECT * FROM usuarios WHERE username=? AND password=SHA1(?)', [email, password], function (err, rows, fields) {
+        res.send(JSON.stringify(rows));
+    });
+});
+app.get("/Adm", function (req, res) {
+    connection.query('SELECT * FROM usuarios', function (err, rows, fields) {
+        res.send(JSON.stringify(rows));
+    });
+});

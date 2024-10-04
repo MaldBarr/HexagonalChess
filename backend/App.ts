@@ -21,7 +21,7 @@ connection.connect(function(err:any) {
     console.error('Error conectando a la DB ' + err.stack);
     return;
     }
-    console.log('Conexión establecida' + connection.threadId);
+    console.log('Conexión establecida ' + connection.threadId);
 });
 
 const configuracion={
@@ -36,3 +36,29 @@ app.listen(configuracion,()=>{
 app.get('/', (req, res) => {
   console.log('GET /');
 });
+
+app.put("/Registro",JsonParser,(req:any,res:any)=>{
+  let username=req.body.username;
+  let email=req.body.email;
+  let password=req.body.password;
+  let pais=req.body.pais;
+  let rating=1000;
+  connection.query('INSERT INTO usuarios(username,email,password,pais,rating) values(?,?,SHA1(?),?,?)',[username,email,password,pais,rating],function(err:any,rows:any,fields:any){
+      res.send(rows);
+  });
+})
+
+app.post("/Login",JsonParser,(req:any,res:any)=>{
+  let email=req.body.email;
+  let password=req.body.password;
+  connection.query('SELECT * FROM usuarios WHERE username=? AND password=SHA1(?)',[email,password],function(err:any,rows:any,fields:any){
+      res.send(JSON.stringify(rows));
+  });
+})
+
+app.get("/Adm",(req:any,res:any)=>{
+  connection.query('SELECT * FROM usuarios',function(err:any,rows:any,fields:any){
+      res.send(JSON.stringify(rows));
+  });
+})
+

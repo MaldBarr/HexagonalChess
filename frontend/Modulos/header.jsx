@@ -7,6 +7,13 @@ function Header() {
     const location = useLocation();
     const [menuOpen, setMenuOpen] = useState(false);
 
+    const token = localStorage.getItem("token");
+    if (token) {
+        console.log("El token es: " + token);
+    } else {
+        console.log("No hay token");
+    }
+
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
     };
@@ -15,7 +22,7 @@ function Header() {
             <header>
                 <Link to="/"><img src={Logo} className="HeaderLogo"/></Link>
                 <Link to="/"><h1>Hex'a'Chess</h1></Link>
-                <Link to="/Salas"><button className="play-button">Jugar</button></Link>
+                {token && <Link to="/Salas"><button className="play-button">Jugar</button></Link>}
                 <div></div>
                 
                 <ul className={`header-menu ${menuOpen ? 'open' : ''}`}>

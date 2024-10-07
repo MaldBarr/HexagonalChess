@@ -73,7 +73,7 @@ app.post("/Login", JsonParser, function (req, res) {
         if (!user) {
             return res.status(400).send('Usuario no encontrado');
         }
-        var token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '72h' });
+        var token = jwt.sign({ id: user.id, username: user.username, email: user.email, elo: user.rating }, JWT_SECRET, { expiresIn: '72h' });
         res.json({ token: token });
     });
 });

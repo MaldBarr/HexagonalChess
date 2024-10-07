@@ -38,6 +38,7 @@ function Login() {
             }).then((response) => {
                 console.log(response.data);
                 if(response.data.token) {
+                    localStorage.setItem("token", response.data.token);
                     alert("Inicio de sesión exitoso");
                     navigate("/");
                 } else {

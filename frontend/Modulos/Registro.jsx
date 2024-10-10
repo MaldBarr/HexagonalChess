@@ -6,6 +6,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import $ from 'jquery';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 var data;
 
 function register() {
@@ -14,13 +17,14 @@ function register() {
         data = response.data;
     }).catch((error) => {
         console.log(error);
+        toast.error("Error al cargar los datos");
     });
 
     const navigate = useNavigate();
     const handleSubmit = (event) => {
         event.preventDefault();
         if(validateRegister()){
-            alert("Registro exitoso");
+            toast.success("Registro exitoso");
             navigate("/Login");
         }
     }
@@ -54,22 +58,22 @@ function validateRegister(){
     var numCosasVerificadas = 0 ;
 
     if(nombre.length < 6){
-        alert("El nombre de usuario debe tener al menos 6 caracteres");
+        toast("El nombre de usuario debe tener al menos 6 caracteres");
     } else {
         data.forEach(element => {
             if(element.username == nombre){
-                alert("El nombre de usuario no esta disponible");
+                toast("El nombre de usuario no esta disponible");
             } else {
                 numCosasVerificadas++;
             }
         });
     }
     if(!validarCorreoElectronico(email)){
-        alert("Correo electronico invalido");
+        toast("Correo electronico invalido");
     } else {
         data.forEach(element => {
             if(element.email == email){
-                alert("El correo ya esta en uso");
+                toast("El correo ya esta en uso");
             } else {
                 numCosasVerificadas++;
             }
@@ -77,22 +81,22 @@ function validateRegister(){
     }
 
     if(pais == null){
-        alert("Seleccione un pais");
+        toast("Seleccione un pais");
     } else {
         numCosasVerificadas++;
     }
 
     if(contra.length < 8){
-        alert("La contraseña debe tener al menos 8 caracteres");
+        toast("La contraseña debe tener al menos 8 caracteres");
     } else if (!/[A-Z]/.test(contra)){
-        alert("La contraseña debe tener al menos una letra mayúscula");
+        toast("La contraseña debe tener al menos una letra mayúscula");
     }
     else {
         numCosasVerificadas++;
     }
 
     if(contra != contra2){
-        alert("Las contraseñas no coinciden");
+        toast("Las contraseñas no coinciden");
     } else {
         numCosasVerificadas++;
     }

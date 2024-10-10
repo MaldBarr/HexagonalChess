@@ -4,6 +4,8 @@ import './CSS/Login.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import $ from 'jquery';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function Login() {
@@ -39,31 +41,30 @@ function Login() {
                 console.log(response.data);
                 if(response.data.token) {
                     localStorage.setItem("token", response.data.token);
-                    alert("Inicio de sesión exitoso");
+                    toast("Inicio de sesión exitoso");
                     navigate("/");
-                } else {
-                    alert("Correo o contraseña incorrectos");
                 }
             }).catch((error) => {
                 console.log(error);
+                toast.error("Correo o contraseña incorrectos");
             });
         }
     }
 
     return (
-        <div className="Parent">
-            <div className="Container">
-                <Link to="/">Inicio</Link>
-                <h1>Iniciar sesión</h1>
-                <form onSubmit={handleSubmit}>
-                    <input type="text" id="email" placeholder="Correo" required />
-                    <input type="password" id="password" placeholder="Contraseña" required />
-                    <button type="submit">Iniciar sesión</button>
-                </form>
-                <p>¿No tienes una cuenta? <Link to="/Registro">Registrate</Link></p>
-                <p>Olvidaste tu Contraseña</p>
+            <div className="Parent">
+                <div className="Container">
+                    <Link to="/">Inicio</Link>
+                    <h1>Iniciar sesión</h1>
+                    <form onSubmit={handleSubmit}>
+                        <input type="text" id="email" placeholder="Correo" required />
+                        <input type="password" id="password" placeholder="Contraseña" required />
+                        <button type="submit">Iniciar sesión</button>
+                    </form>
+                    <p>¿No tienes una cuenta? <Link to="/Registro">Registrate</Link></p>
+                    <p>Olvidaste tu Contraseña</p>
+                </div>
             </div>
-        </div>
     )
 }
 

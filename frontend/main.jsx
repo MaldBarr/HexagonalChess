@@ -11,11 +11,14 @@ import Registro from './Modulos/Registro.jsx';
 import Login from './Modulos/Login.jsx';
 import Juego from './Paginas/Juego.jsx';
 import Administrador from './Paginas/Administracion.jsx';
+import { ToastContainer } from 'react-toastify';
 
 function Main() {
   let location = useLocation();
 
   return (
+    <>
+      <ToastContainer/>
       <Routes location={location}>
         <Route path="/" element={<App />} />
         <Route path="/Rules" element={<Reglas />} />
@@ -27,6 +30,7 @@ function Main() {
         <Route path="/Play" element={<Juego />} />
         <Route path="/Adm" element={<Administrador />} />
       </Routes>
+    </>
   );
 }
 

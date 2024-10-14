@@ -1,4 +1,3 @@
-import {firstCol, secondCol, thirdCol, fourthCol, fifthCol, sixthCol, seventhCol, eighthCol, ninthCol, tenthCol, eleventhCol} from '../ConstructorTablero';
 
 export default class Figure {
     constructor (color, type, img, position) {

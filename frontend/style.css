@@ -55,14 +55,7 @@ ul {
   text-align: center;
 }
 
-.logo {
-  height: fit-content;
-  width: fit-content;
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
+
 .HeaderLogo {
   height: fit-content;
   width: fit-content;

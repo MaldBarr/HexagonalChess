@@ -109,16 +109,56 @@ const HexagonalChessBoard = () => {
     else return '#96e896';
   };
 
+  const axialToChessNotation = (q, r) => {
+    const letters = 'abcdefghikl'; // Letras para mapear
+    const boardOrigin = 5; // Tamaño del tablero
+    const letter = letters[boardOrigin + q]; // Q para mapear letras
+    var number = 0;
+    if (q === -5){
+      number = boardOrigin - r + Math.abs(q) - 5;
+    }
+    else if (q === -4 || q === 2){
+      number = boardOrigin - r + Math.abs(q) - 4;
+    }
+    else if (q === -3){ 
+      number = boardOrigin - r + Math.abs(q) - 3;
+    }
+    else if (q === -2 || q === 1){
+      number = boardOrigin - r + Math.abs(q) - 2;
+    }
+    else if (q === -1){
+      number = boardOrigin - r + Math.abs(q) - 1;
+    }
+    else if (q === 0){
+      number = boardOrigin - r + Math.abs(q);
+    }
+    else if (q === 3){
+      number = boardOrigin - r + Math.abs(q) - 6;
+    }
+    else if (q === 4){
+      number = boardOrigin - r + Math.abs(q) - 8;
+    }
+    else if (q === 5){
+      number = boardOrigin - r + Math.abs(q) - 10;
+    }
+    return `${letter}${number}`;
+  };
+
   return (
     <HexGrid width={600} height={700}>
       <Layout size={{ x: 4, y: 4 }} flat={true} spacing={1.1} origin={{ x: 0, y: 0 }}>
-        {hexagons.map(({ q, r, s }) => (
-          <g key={`${q}-${r}-${s}`} style={{ fill: getHexColor(q, r, s) }}>
-            <Hexagon q={q} r={r} s={s}>
-            <Text style={{ fontSize: '2px', fill: 'black' }}>{`${q},${r},${s}`}</Text>
+        {hexagons.map(({q, r, s}) => {
+          const hexNotation = axialToChessNotation(q, r-1);
+          return (
+            <g key={`${q}-${r}-${s}`} style={{ fill: getHexColor(q, r, s) }}>
+              <Hexagon q={q} r={r} s={s}>
+                <Text style={{ fontSize: '1.5px', fill: 'black' }} x={0} y={3}>
+                  {hexNotation}
+                </Text>
             </Hexagon>
           </g>
-        ))}
+          );
+        })}
       </Layout>
     </HexGrid>
   );

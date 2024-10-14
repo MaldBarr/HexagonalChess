@@ -1,6 +1,6 @@
 import React from 'react';
 import './style.css'
-import viteLogo from '/vite.svg'
+import Board from './Figuras/Board.png'
 import Logo from './Figuras/g-queen.png'
 import gif from './public/Interface.gif'
 
@@ -25,8 +25,7 @@ function App() {
           </p>
         </section>
         <section className='Images'>
-            <img src={Logo} className="logo"/>
-            <img src={viteLogo} className="logo vanilla" alt="JavaScript logo" />
+            <img src={Board} className="RulesIMG logo" alt="JavaScript logo" />
         </section>
       </div>
     </>

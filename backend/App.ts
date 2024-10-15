@@ -98,11 +98,20 @@ app.get("/Adm",(req:any,res:any)=>{
   });
 })
 
-app.put("/EditAccount",JsonParser,(req:any,res:any)=>{
-  let username=req.body.username;
-  let email=req.body.email;
-  let password=req.body.password;
-  connection.query('UPDATE usuarios SET password=SHA1(?) AND username=? WHERE email=?',[password,username,email],function(err:any,rows:any,fields:any){
-    res.send(JSON.stringify(rows));
-  });
-})
+app.put("/EditAccount", JsonParser, (req: any, res: any) => {
+  let username = req.body.username;
+  let email = req.body.email;
+  let password = req.body.password;
+
+  connection.query(
+    'UPDATE usuarios SET password=SHA1(?), username=? WHERE email=?',
+    [password, username, email],
+    function (err: any, rows: any, fields: any) {
+      if (err) {
+        res.status(500).send({ error: 'Database error' });
+        return;
+      }
+      res.send(JSON.stringify(rows));
+    }
+  );
+});

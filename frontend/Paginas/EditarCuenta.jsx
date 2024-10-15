@@ -55,24 +55,28 @@ function EditAccount() {
     return (
         <div>
             <Header />
-            <h1>Administracion de cuenta</h1>
             {userInfo ? (
-                <div>
-                    <p>Bienvenido/a, {userInfo.username}</p>
-                    <p>Aqui puedes editar los datos de tu cuenta</p>
-                    <form onSubmit={handleSubmit}>
-                        <p>Nombre de usuario</p>
-                        <input type="text" id="username" placeholder={userInfo.username} required />
-                        <p>Contraseña nueva</p>
-                        <input type="password" id="password" placeholder="Contraseña" required />
-                        <p>Confirmar contraseña nueva</p>
-                        <input type="password" id="password2" placeholder="Confirmar contraseña" required />
-                        <button type="submit">Editar cuenta</button>
-                    </form>
+                <div className="Parent">
+                    <div className="Container">
+                        <h1>Administracion de cuenta</h1>
+                        <p>Bienvenido/a, {userInfo.username}</p>
+                        <p>Aqui puedes editar los datos de tu cuenta</p>
+                        <form onSubmit={handleSubmit}>
+                            <p>Nombre de usuario</p>
+                            <input type="text" id="username" placeholder={userInfo.username} required />
+                            <p>Contraseña nueva</p>
+                            <input type="password" id="password" placeholder="Contraseña" required />
+                            <p>Confirmar contraseña nueva</p>
+                            <input type="password" id="password2" placeholder="Confirmar contraseña" required />
+                            <button type="submit">Editar cuenta</button>
+                            <button onClick={() => navigate("/Account")}>Cancelar</button>
+                        </form>
+                    </div>
                 </div>
             ) : (
                 <div>
                     <p>Error al cargar los datos</p>
+                    <Link to="/"><h3>Inicio</h3></Link>
                 </div>
             )}
         </div>

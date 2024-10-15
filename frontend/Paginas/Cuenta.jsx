@@ -43,7 +43,7 @@ function Cuenta() {
                     <p>Email: {userInfo.email}</p>
                     <p>Elo: {userInfo.elo}</p>
                     {tokenCreationTime && <p>Ultima actualización del Elo: {tokenCreationTime}</p>}
-                    <Link to="/EditAccount"><button disabled>Editar cuenta</button></Link>
+                    <Link to="/EditAccount"><button>Editar cuenta</button></Link>
                     <button onClick={handleLogout}>Cerrar sesión</button>
                 </div>
             ) : (

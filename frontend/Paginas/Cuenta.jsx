@@ -15,6 +15,7 @@ function Cuenta() {
         if (token) {
             try {
                 const decoded = jwtDecode(token);
+                console.log(decoded);
                 if (decoded.iat) {
                     const creationTime = new Date(decoded.iat * 1000);
                     setTokenCreationTime(creationTime.toLocaleString());
@@ -42,6 +43,7 @@ function Cuenta() {
                     <p>Email: {userInfo.email}</p>
                     <p>Elo: {userInfo.elo}</p>
                     {tokenCreationTime && <p>Ultima actualización del Elo: {tokenCreationTime}</p>}
+                    <Link to="/EditAccount"><button disabled>Editar cuenta</button></Link>
                     <button onClick={handleLogout}>Cerrar sesión</button>
                 </div>
             ) : (

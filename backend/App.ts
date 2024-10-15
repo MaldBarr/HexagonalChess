@@ -87,7 +87,7 @@ app.post("/Login",JsonParser,(req:any,res:any)=>{
       if (!user) {
         return res.status(400).send('Usuario no encontrado');
       }
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '72h' });
+    const token = jwt.sign({ id: user.id, username: user.username, email: user.email, elo: user.rating }, JWT_SECRET, { expiresIn: '72h' });
     res.json({ token });
   });
 })
@@ -95,5 +95,14 @@ app.post("/Login",JsonParser,(req:any,res:any)=>{
 app.get("/Adm",(req:any,res:any)=>{
   connection.query('SELECT * FROM usuarios',function(err:any,rows:any,fields:any){
       res.send(JSON.stringify(rows));
+  });
+})
+
+app.put("/EditAccount",JsonParser,(req:any,res:any)=>{
+  let username=req.body.username;
+  let email=req.body.email;
+  let password=req.body.password;
+  connection.query('UPDATE usuarios SET password=SHA1(?) AND username=? WHERE email=?',[password,username,email],function(err:any,rows:any,fields:any){
+    res.send(JSON.stringify(rows));
   });
 })

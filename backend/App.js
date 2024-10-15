@@ -82,3 +82,11 @@ app.get("/Adm", function (req, res) {
         res.send(JSON.stringify(rows));
     });
 });
+app.put("/EditAccount", JsonParser, function (req, res) {
+    var username = req.body.username;
+    var email = req.body.email;
+    var password = req.body.password;
+    connection.query('UPDATE usuarios SET password=SHA1(?) AND username=? WHERE email=?', [password, username, email], function (err, rows, fields) {
+        res.send(JSON.stringify(rows));
+    });
+});

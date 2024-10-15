@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import $ from 'jquery';
 
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 var data;
@@ -27,6 +27,7 @@ function register() {
             toast.success("Registro exitoso");
             navigate("/Login");
         }
+        else{toast.error("Error al registrar");}
     }
 
     return (
@@ -57,47 +58,65 @@ function validateRegister(){
     console.log("se ejecuto registro")
     var numCosasVerificadas = 0 ;
 
+    console.log("nombre: "+nombre);
     if(nombre.length < 6){
-        toast("El nombre de usuario debe tener al menos 6 caracteres");
+        toast.error("El nombre de usuario debe tener al menos 6 caracteres");
     } else {
-        data.forEach(element => {
-            if(element.username == nombre){
-                toast("El nombre de usuario no esta disponible");
-            } else {
-                numCosasVerificadas++;
-            }
-        });
+        if (data.length == 0){
+            console.log("nombre verificado");
+            numCosasVerificadas++;
+        }
+        else{
+            data.forEach(element => {
+                if(element.username === nombre){
+                    console.log("El nombre de usuario no esta disponible");
+                } else {
+                    console.log("nombre verificado");
+                    numCosasVerificadas++;
+                }
+            });
+        }
     }
     if(!validarCorreoElectronico(email)){
-        toast("Correo electronico invalido");
+        toast.error("Correo electronico invalido");
     } else {
-        data.forEach(element => {
-            if(element.email == email){
-                toast("El correo ya esta en uso");
-            } else {
-                numCosasVerificadas++;
-            }
-        });
+        if (data.length == 0){
+            console.log("correo verificado");
+            numCosasVerificadas++;
+        }
+        else {
+            data.forEach(element => {
+                if(element.email == email){
+                    toast.error("El correo ya esta en uso");
+                } else {
+                    console.log("email: "+email);
+                    numCosasVerificadas++;
+                }
+            });
+        }
     }
 
     if(pais == null){
         toast("Seleccione un pais");
     } else {
+        console.log("pais: "+pais);
         numCosasVerificadas++;
     }
 
     if(contra.length < 8){
-        toast("La contraseña debe tener al menos 8 caracteres");
+        toast.error("La contraseña debe tener al menos 8 caracteres");
     } else if (!/[A-Z]/.test(contra)){
-        toast("La contraseña debe tener al menos una letra mayúscula");
+        toast.error("La contraseña debe tener al menos una letra mayúscula");
     }
     else {
+        console.log("contra lista");
         numCosasVerificadas++;
     }
 
     if(contra != contra2){
-        toast("Las contraseñas no coinciden");
+        toast.error("Las contraseñas no coinciden");
     } else {
+        console.log("contras iguales");
         numCosasVerificadas++;
     }
 

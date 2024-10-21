@@ -14,6 +14,7 @@ var connection = mysql.createConnection({
     database: 'hexachess'
 });
 var JWT_SECRET = 'hexacheck';
+var JWT_Admin = 'admHC';
 var authenticateToken = function (req, res, next) {
     var token = req.headers['authorization'];
     if (!token) {
@@ -49,6 +50,7 @@ app.get("/Registro", function (req, res) {
         res.send(JSON.stringify(rows));
     });
 });
+///Opciones de usuario
 app.put("/Registro", JsonParser, function (req, res) {
     var username = req.body.username;
     var email = req.body.email;
@@ -77,11 +79,6 @@ app.post("/Login", JsonParser, function (req, res) {
         res.json({ token: token });
     });
 });
-app.get("/Adm", function (req, res) {
-    connection.query('SELECT * FROM usuarios', function (err, rows, fields) {
-        res.send(JSON.stringify(rows));
-    });
-});
 app.put("/EditAccount", JsonParser, function (req, res) {
     var username = req.body.username;
     var email = req.body.email;
@@ -91,6 +88,30 @@ app.put("/EditAccount", JsonParser, function (req, res) {
             res.status(500).send({ error: 'Database error' });
             return;
         }
+        res.send(JSON.stringify(rows));
+    });
+});
+//Opciones de administrador
+app.get("/LoginAdm", JsonParser, function (req, res) {
+    var email = req.body.email;
+    var password = req.body.password;
+    connection.query('SELECT * FROM administradores WHERE email=? AND password=SHA1(?)', [email, password], function (err, results, fields) {
+        if (err) {
+            return res.status(500).json({ error: 'Error retrieving user' });
+        }
+        if (results.length === 0) {
+            return res.status(401).json({ error: 'Invalid username or password' });
+        }
+        var user = results[0];
+        if (!user) {
+            return res.status(400).send('administrador no encontrado');
+        }
+        var token = jwt.sign({ id: user.id, username: user.username, email: user.email }, JWT_Admin, { expiresIn: '24h' });
+        res.json({ token: token });
+    });
+});
+app.get("/Adm", function (req, res) {
+    connection.query('SELECT * FROM usuarios', function (err, rows, fields) {
         res.send(JSON.stringify(rows));
     });
 });

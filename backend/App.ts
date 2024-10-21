@@ -19,6 +19,7 @@ const connection = mysql.createConnection({
 });
 
 const JWT_SECRET = 'hexacheck';
+const JWT_Admin = 'admHC';
 
 const authenticateToken = (req, res, next) => {
   const token = req.headers['authorization'];
@@ -62,6 +63,7 @@ app.get("/Registro",(req:any,res:any)=>{
   });
 })
 
+///Opciones de usuario
 app.put("/Registro",JsonParser,(req:any,res:any)=>{
   let username=req.body.username;
   let email=req.body.email;
@@ -92,12 +94,6 @@ app.post("/Login",JsonParser,(req:any,res:any)=>{
   });
 })
 
-app.get("/Adm",(req:any,res:any)=>{
-  connection.query('SELECT * FROM usuarios',function(err:any,rows:any,fields:any){
-      res.send(JSON.stringify(rows));
-  });
-})
-
 app.put("/EditAccount", JsonParser, (req: any, res: any) => {
   let username = req.body.username;
   let email = req.body.email;
@@ -115,3 +111,29 @@ app.put("/EditAccount", JsonParser, (req: any, res: any) => {
     }
   );
 });
+
+//Opciones de administrador
+app.get("/LoginAdm",JsonParser,(req:any,res:any)=>{
+  let email=req.body.email;
+  let password=req.body.password;
+  connection.query('SELECT * FROM administradores WHERE email=? AND password=SHA1(?)',[email,password],function(err:any,results:any,fields:any){
+    if (err) {
+      return res.status(500).json({ error: 'Error retrieving user' });
+    }
+    if (results.length === 0) {
+        return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    const user = results[0];
+      if (!user) {
+        return res.status(400).send('administrador no encontrado');
+      }
+    const token = jwt.sign({ id: user.id, username: user.username, email: user.email }, JWT_Admin, { expiresIn: '24h' });
+    res.json({ token });
+  });
+})
+
+app.get("/Adm",(req:any,res:any)=>{
+  connection.query('SELECT * FROM usuarios',function(err:any,rows:any,fields:any){
+      res.send(JSON.stringify(rows));
+  });
+})

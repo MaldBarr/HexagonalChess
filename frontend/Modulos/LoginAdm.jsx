@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-function Login() {
+function LoginAdm() {
     const navigate = useNavigate();
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -42,7 +42,7 @@ function Login() {
                 if(response.data.token) {
                     localStorage.setItem("token", response.data.token);
                     toast("Inicio de sesión exitoso");
-                    navigate("/");
+                    navigate("/Adm");
                 }
             }).catch((error) => {
                 console.log(error);
@@ -55,15 +55,12 @@ function Login() {
             <div className="Parent">
                 <div className="Container">
                     <Link to="/">Inicio</Link>
-                    <h1>Iniciar sesión</h1>
+                    <h1>Login Administrador</h1>
                     <form onSubmit={handleSubmit}>
                         <input type="text" id="email" placeholder="Correo" required />
                         <input type="password" id="password" placeholder="Contraseña" required />
                         <button type="submit">Iniciar sesión</button>
                     </form>
-                    <p>¿No tienes una cuenta? <Link to="/Registro">Registrate</Link></p>
-                    <p>¿Eres administrador? <Link to="/LoginAdm">Login Administrador</Link></p>
-                    <p>Olvidaste tu Contraseña</p>
                 </div>
             </div>
     )
@@ -77,4 +74,4 @@ function validarCorreoElectronico(correo) {
     return expresionRegular.test(correo);
 }
 
-export default Login;
+export default LoginAdm;

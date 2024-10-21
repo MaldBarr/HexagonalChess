@@ -11,7 +11,7 @@ function fetchPaises() {
             <select id="pais" required>
                 <option value="" disabled selected>Seleccione un país</option>
                 {paises.map((data,i) => (
-                    <option value={i} key={i}>
+                    <option value={data.name} key={i}>
                         {data.name}
                     </option>
                 ))}

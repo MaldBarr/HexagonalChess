@@ -44,6 +44,7 @@ function register() {
                     <button type="submit">Registrarse</button>
                 </form>
                 <p>¿Ya tienes una cuenta? <Link to="/Login">Inicia sesión</Link></p>
+                <p>¿Eres administrador? <Link to="/LoginAdm">Login Administrador</Link></p>
             </div>
         </div>
     )

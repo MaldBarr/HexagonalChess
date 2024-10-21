@@ -154,3 +154,34 @@ button:focus-visible {
     text-decoration: none;
     margin-right: auto;
 }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 600px;
+  overflow-x: auto;
+  display: block;
+  white-space: nowrap;
+  border-spacing: 0;
+  border-radius: 8px;
+  box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+  background-color: #1a1a1a;
+  color: #ffffff;
+  margin-bottom: 1em;
+}
+
+th {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-weight: 500;
+  padding: 0.5em 1em;
+  text-align: center;
+  width: 100px;
+}
+td {
+  padding: 0.5em 1em;
+  border-bottom: 1px solid #333;
+  width: 100px;
+  text-align: center;
+}

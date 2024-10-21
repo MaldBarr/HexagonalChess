@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from '../Modulos/header.jsx';
 import HexagonalChessBoard from '../Tablero/GridHexagonal.jsx';
+import { HexGridContext } from '../Tablero/Elementos/HexagonalGridContext.jsx';
 import Game from '../Tablero/ConstructorTablero.jsx';
 
 import {useState} from 'react';

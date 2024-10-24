@@ -23,7 +23,7 @@ function Header() {
                 <Link to="/"><img src={Logo} className="HeaderLogo"/></Link>
                 <Link to="/"><h1>Hex'a'Chess</h1></Link>
                 {token && <Link to="/Salas"><button className="play-button">Jugar</button></Link>}
-                <div></div>
+                <div className="Separador"></div>
                 
                 <ul className={`header-menu ${menuOpen ? 'open' : ''}`}>
                     <li><Link to="/Rules" className={location.pathname === '/Rules' ? 'active' : ''}>Reglas</Link></li>

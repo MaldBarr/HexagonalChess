@@ -13,10 +13,17 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+#root{
+  width: 100%;
+}
+.Separador{
+  width: 3000px;
+}
+/*
 *{
   width: 100%;
 }
-
+*/
 a {
   padding-left: 20px;
   font-weight: 500;
@@ -185,3 +192,4 @@ td {
   width: 100px;
   text-align: center;
 }
+

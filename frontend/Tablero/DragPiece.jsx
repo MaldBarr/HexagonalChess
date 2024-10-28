@@ -4,7 +4,7 @@ import { useDrag } from 'react-dnd';
 const DraggablePiece = ({ piece, hexNotation }) => {
     const [{ isDragging }, drag] = useDrag(() => ({
       type: 'piece',
-      item: { hexNotation, piece },
+      item: { hexNotation },
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),
@@ -17,23 +17,23 @@ const DraggablePiece = ({ piece, hexNotation }) => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          position: 'absolute',  // Ensure it's positioned within the hexagon
+          position: 'absolute',  // Within the hexagon
           left: '50%',
           top: '50%',
-          transform: 'translate(-50%, -50%)',  // Center the piece in the hexagon
-          width: '16px',
-          height: '16px',
+          transform: 'translate(-50%, -50%)',  // Center piece
+          width: '100%',
+          height: '100%',
           opacity: isDragging ? 0.5 : 1,
           cursor: 'pointer',
-          zIndex: 2,  // Make sure it's above the hexagon
+          zIndex: 2,  // To sure it's above the hexagon
         }}
       >
         <img
           src={piece}
-          alt={`Piece at ${hexNotation}`}
+          alt={`Piece ${piece} at ${hexNotation}`}
           style={{
-            width: '4px', 
-            height: '4px',
+            width: '100%', 
+            height: '100%',
           }}
         />
       </div>

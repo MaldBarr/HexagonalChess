@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import { Hexagon } from 'react-hexgrid';
+import { Hexagon, Text } from 'react-hexgrid';
 
 const whiteHex = [
     //first column
@@ -97,19 +97,22 @@ const getHexColor = (q, r, s) => {
 
 const DroppableHexagon = ({ q, r, s, movePiece, hexNotation, children }) => {
     const [{ isOver }, drop] = useDrop(() => ({
-    accept: 'piece',
-    drop: (item) => movePiece(item.hexNotation, hexNotation),
-    collect: (monitor) => ({
-        isOver: !!monitor.isOver(),
-    }),
-}));
+        accept: 'piece',
+        drop: (item) => movePiece(item.hexNotation, hexNotation),
+        collect: (monitor) => ({
+            isOver: !!monitor.isOver(),
+        }),
+    }));
 
     return (
     <g ref={drop}>
         <Hexagon q={q} r={r} s={s} style={{ fill: getHexColor(q,r,s)}}>
-            <foreignObject x={-2} y={-2} width={4} height={4}>
+            <foreignObject x={-3} y={-4} width={6} height={6}>
                 {children}
             </foreignObject>
+            <Text style={{ fontSize: '1.5px', fill: 'black' }} x={0} y={3}>
+                {hexNotation} {q},{r},{s}
+            </Text> 
         </Hexagon>
     </g>
     );

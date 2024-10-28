@@ -4,6 +4,7 @@ import { useDrop } from 'react-dnd';
 import DraggablePiece from './DragPiece';
 import DroppableHexagon from './DropPiece';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 import black_bishop from '../Figuras/b-bishop.png';
 import black_knight from '../Figuras/b-knight.png';
@@ -18,51 +19,106 @@ import white_king from '../Figuras/w-king.png';
 import white_pawn from '../Figuras/w-pawn.png';
 import black_pawn from '../Figuras/b-pawn.png';
 
+const pieces = {
+  //white pieces
+  b1: white_pawn,
+  c2: white_pawn,
+  d3: white_pawn,
+  e4: white_pawn,
+  f5: white_pawn,
+  g4: white_pawn,
+  h3: white_pawn,
+  i2: white_pawn,
+  k1: white_pawn,
+  c1: white_rook,
+  d1: white_knight,
+  e1: white_queen,
+  f1: white_bishop,
+  f2: white_bishop,
+  f3: white_bishop,
+  g1: white_king,
+  h1: white_knight,
+  i1: white_rook,
+
+  //black pieces
+  b7: black_pawn,
+  c7: black_pawn,
+  d7: black_pawn,
+  e7: black_pawn,
+  f7: black_pawn,
+  g7: black_pawn,
+  h7: black_pawn,
+  i7: black_pawn,
+  k7: black_pawn,
+  c8: black_rook,
+  d9: black_knight,
+  e10: black_queen,
+  f11: black_bishop,
+  f10: black_bishop,
+  f9: black_bishop,
+  g10: black_king,
+  h9: black_knight,
+  i8: black_rook
+}
+
+const getPieceName = (piece) => {
+  return piece.split('/')[2].split('.')[0]; // Extract piece name from the URL and remove the file extension
+}
+
+//Piece movements
+const validMove = (piece, fromHex, toHex) => {
+  const pieceType = getPieceName(piece).split("-")[1]; // Extract piece type (e.g., 'pawn', 'rook')
+  const fromQ = fromHex.charCodeAt(0) - 'a'.charCodeAt(0);
+  const fromR = parseInt(fromHex.slice(1), 10);
+  const toQ = toHex.charCodeAt(0) - 'a'.charCodeAt(0);
+  const toR = parseInt(toHex.slice(1), 10);
+  console.log("Validating move for", pieceType, "from","Q", fromQ,"R", fromR, "to","Q", toQ,"R", toR);
+
+  switch (pieceType) {
+
+    case 'pawn':
+      return isValidPawnMove(fromQ, fromR, toQ, toR);
+    case 'rook':
+      return isValidRookMove(fromQ, fromR, toQ, toR);
+    
+    default:
+      return false;
+  }
+}
+
+const isValidPawnMove = (fromQ, fromR, toQ, toR) => {
+  //Only move one square forward
+  return (toQ === fromQ && toR === fromR + 1);
+}
+
+const isValidRookMove = (fromQ, fromR, toQ, toR) => {
+  const fromS = -fromQ - fromR;
+  const toS = -toQ - toR;
+  console.log("Rook From S", fromS, "To S", toS);
+
+  // Vertical movement
+  if (fromQ === toQ && fromR !== toR && fromS !== toS) {
+    return true;
+  }
+
+  // Diagonal movement (type 1)
+  if (fromR === toR && fromS != toS && fromQ !== toQ) {
+    return true;
+  }
+
+  // Diagonal movement (type 2)
+  if (fromS === toS && fromR != toR && fromQ !== toQ) {
+    return true;
+  }
+  toast.error("Movimiento inválido");
+  return false;
+}
+
 const HexagonalChessBoard = () => {
   const hexagons = [];
   const boardRadius = 5;
 
-  const [pieces, setPieces] = useState({
-    //white pieces
-    b1: white_pawn,
-    c2: white_pawn,
-    d3: white_pawn,
-    e4: white_pawn,
-    f5: white_pawn,
-    g4: white_pawn,
-    h3: white_pawn,
-    i2: white_pawn,
-    k1: white_pawn,
-    c1: white_rook,
-    d1: white_knight,
-    e1: white_queen,
-    f1: white_bishop,
-    f2: white_bishop,
-    f3: white_bishop,
-    g1: white_king,
-    h1: white_knight,
-    i1: white_rook,
-
-    //black pieces
-    b7: black_pawn,
-    c7: black_pawn,
-    d7: black_pawn,
-    e7: black_pawn,
-    f7: black_pawn,
-    g7: black_pawn,
-    h7: black_pawn,
-    i7: black_pawn,
-    k7: black_pawn,
-    c8: black_rook,
-    d9: black_knight,
-    e10: black_queen,
-    f11: black_bishop,
-    f10: black_bishop,
-    f9: black_bishop,
-    g10: black_king,
-    h9: black_knight,
-    i8: black_rook
-  });
+  const [_, setRender] = useState(false);
   // Crear hexagonos
   for (let q = -boardRadius; q <= boardRadius; q++) {
     for (let r = Math.max(-boardRadius, -q - boardRadius); r <= Math.min(boardRadius, -q + boardRadius); r++) {
@@ -106,35 +162,19 @@ const HexagonalChessBoard = () => {
     return `${letter}${number}`;
   };
 
-  // Drag and drop
-  /* OLD Version
-  const [{ isOver }, drop] = useDrop({
-    accept: 'piece',
-    drop: (item, monitor) => {
-      const newPosition = axialToChessNotation(item.q, item.r); // New hexagon position
-      const piece = pieces[item.hexNotation]; // Get the piece being dragged
-
-      setPieces((prevPieces) => {
-        const newPieces = { ...prevPieces };
-        delete newPieces[item.hexNotation]; // Remove piece from old position
-        newPieces[newPosition] = piece; // Place piece at new position
-        return newPieces;
-      });
-    },
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-    }),
-  });*/
-
-  const movePiece = (fromHex, toHex) => {
+  const movePiece = (fromHex, toHex, q, r, s) => {
+    console.log("Moving piece",getPieceName(pieces[fromHex]),"from", fromHex, "to", toHex);
     if (!pieces[fromHex]) return;  // No piece to move from the original hex
+    if (pieces[toHex] && getPieceName(pieces[toHex]).split('-')[0] === getPieceName(pieces[fromHex]).split('-')[0]){
+      console.log(getPieceName(pieces[toHex]),"can't get captured by",getPieceName(pieces[fromHex]));
+      toast.error("No puedes capturar tus propias piezas");
+      return; // Prevent capturing own pieces
+    }
+    if (!validMove(pieces[fromHex], fromHex, toHex, q, r, s)) return; // Check if the move is valid
 
-    setPieces((prevPieces) => {
-      const newPieces = { ...prevPieces };
-      newPieces[toHex] = newPieces[fromHex];  // Move the piece to the new hex
-      delete newPieces[fromHex];  // Remove the piece from the old hex
-      return newPieces;
-    });
+    pieces[toHex] = pieces[fromHex];
+    delete pieces[fromHex];
+    setRender((prev) => !prev);
   };
 
   return (
@@ -154,12 +194,6 @@ const HexagonalChessBoard = () => {
               {pieces[hexNotation] && (
                 <DraggablePiece piece={pieces[hexNotation]} hexNotation={hexNotation} />
               )}
-              {/* Show the hexagon notation
-              <Text style={{ fontSize: '1.5px', fill: 'black' }} x={0} y={3}>
-                  {hexNotation}
-              </Text> 
-              */}
-              
             </DroppableHexagon>
           );
         })}

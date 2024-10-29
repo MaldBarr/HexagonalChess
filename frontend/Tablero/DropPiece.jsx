@@ -98,7 +98,12 @@ const getHexColor = (q, r, s) => {
 const DroppableHexagon = ({ q, r, s, movePiece, hexNotation, children }) => {
     const [{ isOver }, drop] = useDrop(() => ({
         accept: 'piece',
-        drop: (item) => movePiece(item.hexNotation, hexNotation),
+        drop: (item) => {
+            const fromQ = item.q;
+            const fromR = item.r;
+            const fromS = item.s;
+            movePiece(item.hexNotation, hexNotation, fromQ, fromR, fromS, q, r, s);
+        },
         collect: (monitor) => ({
             isOver: !!monitor.isOver(),
         }),

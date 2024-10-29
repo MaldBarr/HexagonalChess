@@ -66,36 +66,39 @@ const getPieceName = (piece) => {
 }
 
 //Piece movements
-const validMove = (piece, fromHex, toHex) => {
+const validMove = (piece, fromHex, toHex, fromQ, fromR, fromS, toQ, toR, toS) => {
   const pieceType = getPieceName(piece).split("-")[1]; // Extract piece type (e.g., 'pawn', 'rook')
-  const fromQ = fromHex.charCodeAt(0) - 'a'.charCodeAt(0);
-  const fromR = parseInt(fromHex.slice(1), 10);
-  const toQ = toHex.charCodeAt(0) - 'a'.charCodeAt(0);
-  const toR = parseInt(toHex.slice(1), 10);
-  console.log("Validating move for", pieceType, "from","Q", fromQ,"R", fromR, "to","Q", toQ,"R", toR);
+  console.log("Validating move for", pieceType, "from", "Q", fromQ, "R", fromR, "S", fromS, "to", "Q", toQ, "R", toR, "S", toS);
 
   switch (pieceType) {
 
     case 'pawn':
-      return isValidPawnMove(fromQ, fromR, toQ, toR);
+      return isValidPawnMove(piece, fromQ, fromR, toQ, toR);
     case 'rook':
-      return isValidRookMove(fromQ, fromR, toQ, toR);
-    
+      return isValidRookMove(fromQ, fromR, fromS, toQ, toR, toS);
+    case 'knight':
+      return isValidKnightMove(fromQ, fromR, fromS, toQ, toR, toS);
+    case 'bishop':
+      return isValidBishopMove(fromQ, fromR, fromS, toQ, toR, toS);
+    case 'queen':
+      return isValidRookMove(fromQ, fromR, fromS, toQ, toR, toS) || isValidBishopMove(fromQ, fromR, fromS, toQ, toR, toS);
+    case 'king':
+      return isValidKingMove(fromQ, fromR, fromS, toQ, toR, toS);
     default:
       return false;
   }
 }
 
-const isValidPawnMove = (fromQ, fromR, toQ, toR) => {
+const isValidPawnMove = (piece, fromQ, fromR, toQ, toR) => {
   //Only move one square forward
+  piece = getPieceName(piece).split("-")[0];
+  if (piece === "w" && toQ === fromQ && toR === fromR - 1) {
+    return true;
+  }
   return (toQ === fromQ && toR === fromR + 1);
 }
 
-const isValidRookMove = (fromQ, fromR, toQ, toR) => {
-  const fromS = -fromQ - fromR;
-  const toS = -toQ - toR;
-  console.log("Rook From S", fromS, "To S", toS);
-
+const isValidRookMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
   // Vertical movement
   if (fromQ === toQ && fromR !== toR && fromS !== toS) {
     return true;
@@ -108,6 +111,128 @@ const isValidRookMove = (fromQ, fromR, toQ, toR) => {
 
   // Diagonal movement (type 2)
   if (fromS === toS && fromR != toR && fromQ !== toQ) {
+    return true;
+  }
+  toast.error("Movimiento inválido");
+  return false;
+}
+
+const isValidKnightMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
+  // L shape movement (Superior left)
+  if (toQ === fromQ - 1 && toR === fromR - 2 && toS === fromS + 3) {
+    return true;
+  }
+  // L shape movement (Superior right)
+  if (toQ === fromQ + 1 && toR === fromR - 3 && toS === fromS + 2) {
+    return true;
+  }
+  // L shape movement (Upper left up)
+  if (toQ === fromQ - 2 && toR === fromR -1 && toS === fromS + 3) {
+    return true;
+  }
+  // L shape movement (Upper left down)
+  if (toQ === fromQ - 3 && toR === fromR + 1 && toS === fromS + 2) {
+    return true;
+  }
+  // L shape movement (Upper right up)
+  if (toQ === fromQ + 2 && toR === fromR - 3 && toS === fromS + 1) {
+    return true;
+  }
+  // L shape movement (Upper right down)
+  if (toQ === fromQ + 3 && toR === fromR - 2 && toS === fromS + 1) {
+    return true;
+  }
+  // L shape movement (Lower left up)
+  if (toQ === fromQ - 3 && toR === fromR + 2 && toS === fromS + 1) {
+    return true;
+  }
+  // L shape movement (Lower left down)
+  if (toQ === fromQ - 2 && toR === fromR + 3 && toS === fromS - 1) {
+    return true;
+  }
+  // L shape movement (Lower right up)
+  if (toQ === fromQ + 3 && toR === fromR - 1 && toS === fromS - 2) {
+    return true;
+  }
+  // L shape movement (Lower right down)
+  if (toQ === fromQ + 2 && toR === fromR + 1 && toS === fromS - 3) {
+    return true;
+  }
+  // L shape movement (Inferior left)
+  if (toQ === fromQ - 1 && toR === fromR + 3 && toS === fromS - 2) {
+    return true;
+  }
+  // L shape movement (Inferior right)
+  if (toQ === fromQ + 1 && toR === fromR + 2 && toS === fromS - 3) {
+    return true;
+  }
+  
+  toast.error("Movimiento inválido");
+  return false;
+}
+
+const isValidBishopMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
+  // Horizontal movement
+  if (toR === fromR+1 && toS === fromS+1 && toQ !== fromQ || 
+    toR === fromR-1 && toS === fromS-1 && toQ !== fromQ ||
+    toR === fromR+2 && toS === fromS+2 && toQ !== fromQ ||
+    toR === fromR-2 && toS === fromS-2 && toQ !== fromQ ||
+    toR === fromR+3 && toS === fromS+3 && toQ !== fromQ ||
+    toR === fromR-3 && toS === fromS-3 && toQ !== fromQ ||
+    toR === fromR+4 && toS === fromS+4 && toQ !== fromQ ||
+    toR === fromR-4 && toS === fromS-4 && toQ !== fromQ ||
+    toR === fromR+5 && toS === fromS+5 && toQ !== fromQ ||
+    toR === fromR-5 && toS === fromS-5 && toQ !== fromQ) {
+    return true;
+  }
+  // Diagonal upLeft-downRight movement
+  if (toQ === fromQ+1 && toR === fromR+1 && toS === fromS-2 || 
+    toQ === fromQ-1 && toR === fromR-1 && toS === fromS+2 ||
+    toQ === fromQ+2 && toR === fromR+2 && toS === fromS-4 ||
+    toQ === fromQ-2 && toR === fromR-2 && toS === fromS+4 ||
+    toQ === fromQ+3 && toR === fromR+3 && toS === fromS-6 ||
+    toQ === fromQ-3 && toR === fromR-3 && toS === fromS+6 ||
+    toQ === fromQ+4 && toR === fromR+4 && toS === fromS-8 ||
+    toQ === fromQ-4 && toR === fromR-4 && toS === fromS+8 ||
+    toQ === fromQ+5 && toR === fromR+5 && toS === fromS-10 ||
+    toQ === fromQ-5 && toR === fromR-5 && toS === fromS+10) {
+    return true;
+  }
+  // Diagonal upRight-downLeft movement
+  if (toQ === fromQ-1 && toS === fromS-1 && toR === fromR+2 || 
+    toQ === fromQ+1 && toS === fromS+1 && toR === fromR-2 ||
+    toQ === fromQ-2 && toS === fromS-2 && toR === fromR+4 ||
+    toQ === fromQ+2 && toS === fromS+2 && toR === fromR-4 ||
+    toQ === fromQ-3 && toS === fromS-3 && toR === fromR+6 ||
+    toQ === fromQ+3 && toS === fromS+3 && toR === fromR-6 ||
+    toQ === fromQ-4 && toS === fromS-4 && toR === fromR+8 ||
+    toQ === fromQ+4 && toS === fromS+4 && toR === fromR-8 ||
+    toQ === fromQ-5 && toS === fromS-5 && toR === fromR+10 ||
+    toQ === fromQ+5 && toS === fromS+5 && toR === fromR-10) {
+    return true;
+  }
+
+  toast.error("Movimiento inválido");
+  return false;
+}
+
+const isValidKingMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
+  // First bishop movement
+  if (toR === fromR+1 && toS === fromS+1 && toQ !== fromQ || //Horizontal movement
+    toR === fromR-1 && toS === fromS-1 && toQ !== fromQ ||
+    toQ === fromQ+1 && toR === fromR+1 && toS === fromS-2 || //Diagonal upLeft-downRight movement
+    toQ === fromQ-1 && toR === fromR-1 && toS === fromS+2 ||
+    toQ === fromQ-1 && toS === fromS-1 && toR === fromR+2 || //Diagonal upRight-downLeft movement
+    toQ === fromQ+1 && toS === fromS+1 && toR === fromR-2 ) {
+    return true;
+  }
+  //First rook movement
+  if (toQ === fromQ && toR === fromR+1 && toS === fromS-1 || //Vertical movement
+    toQ === fromQ && toR === fromR-1 && toS === fromS+1 ||
+    toQ === fromQ-1 && toR === fromR && toS === fromS+1|| //Upleft - Downright movement
+    toQ === fromQ+1 && toR === fromR && toS === fromS-1||
+    toQ === fromQ-1 && toR === fromR+1 && toS === fromS || //Upright - Downleft movement
+    toQ === fromQ+1 && toR === fromR-1 && toS === fromS) {
     return true;
   }
   toast.error("Movimiento inválido");
@@ -162,7 +287,7 @@ const HexagonalChessBoard = () => {
     return `${letter}${number}`;
   };
 
-  const movePiece = (fromHex, toHex, q, r, s) => {
+  const movePiece = (fromHex, toHex,  fromQ, fromR, fromS, toQ, toR, toS) => {
     console.log("Moving piece",getPieceName(pieces[fromHex]),"from", fromHex, "to", toHex);
     if (!pieces[fromHex]) return;  // No piece to move from the original hex
     if (pieces[toHex] && getPieceName(pieces[toHex]).split('-')[0] === getPieceName(pieces[fromHex]).split('-')[0]){
@@ -170,7 +295,8 @@ const HexagonalChessBoard = () => {
       toast.error("No puedes capturar tus propias piezas");
       return; // Prevent capturing own pieces
     }
-    if (!validMove(pieces[fromHex], fromHex, toHex, q, r, s)) return; // Check if the move is valid
+
+    if (!validMove(pieces[fromHex], fromHex, toHex,fromQ, fromR, fromS, toQ, toR, toS)) return; // Check if the move is valid
 
     pieces[toHex] = pieces[fromHex];
     delete pieces[fromHex];
@@ -192,7 +318,7 @@ const HexagonalChessBoard = () => {
               hexNotation={hexNotation}
             >
               {pieces[hexNotation] && (
-                <DraggablePiece piece={pieces[hexNotation]} hexNotation={hexNotation} />
+                <DraggablePiece piece={pieces[hexNotation]} hexNotation={hexNotation} q={q} r={r} s={s}/>
               )}
             </DroppableHexagon>
           );

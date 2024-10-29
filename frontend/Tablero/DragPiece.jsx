@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDrag } from 'react-dnd';
 
-const DraggablePiece = ({ piece, hexNotation }) => {
+const DraggablePiece = ({ piece, hexNotation, q, r, s }) => {
     const [{ isDragging }, drag] = useDrag(() => ({
       type: 'piece',
-      item: { hexNotation },
+      item: { hexNotation,q ,r ,s },
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),

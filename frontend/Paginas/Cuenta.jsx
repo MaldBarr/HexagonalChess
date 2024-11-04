@@ -40,6 +40,7 @@ function Cuenta() {
             {userInfo ? (
                 <div>
                     <p>Bienvenido/a, {userInfo.username}</p>
+                    <p>id: {userInfo.id}</p>
                     <p>Email: {userInfo.email}</p>
                     <p>Elo: {userInfo.elo}</p>
                     {tokenCreationTime && <p>Ultima actualización del Elo: {tokenCreationTime}</p>}

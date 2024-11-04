@@ -13,6 +13,8 @@ import Juego from './Paginas/Juego.jsx';
 import Administrador from './Paginas/Administracion.jsx';
 import EditAccount from './Paginas/EditarCuenta.jsx';
 import LoginAdm from './Modulos/LoginAdm.jsx';
+import Lobby from './Paginas/Lobby.jsx';
+
 import { ToastContainer } from 'react-toastify';
 
 function Main() {
@@ -29,10 +31,11 @@ function Main() {
         <Route path='/Salas' element={<Salas />} />
         <Route path="/Registro" element={<Registro />} />
         <Route path="/Login" element={<Login />} />
-        <Route path="/Play" element={<Juego />} />
+        <Route path="/Play/:id" element={<Juego />} />
         <Route path="/Adm" element={<Administrador />} />
         <Route path="/EditAccount" element={<EditAccount />} />
         <Route path="/LoginAdm" element={<LoginAdm />} />
+        <Route path="/Lobby/:id" element={<Lobby />} />
       </Routes>
     </>
   );

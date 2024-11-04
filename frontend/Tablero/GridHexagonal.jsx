@@ -3,7 +3,7 @@ import { HexGrid, Layout, Hexagon, Text } from 'react-hexgrid';
 import { useDrop } from 'react-dnd';
 import DraggablePiece from './DragPiece';
 import DroppableHexagon from './DropPiece';
-import { useState } from 'react';
+import { useState, createContext, useContext } from 'react';
 import { toast } from 'react-toastify';
 
 import black_bishop from '../Figuras/b-bishop.png';
@@ -19,7 +19,8 @@ import white_king from '../Figuras/w-king.png';
 import white_pawn from '../Figuras/w-pawn.png';
 import black_pawn from '../Figuras/b-pawn.png';
 
-const pieces = {
+
+let pieces = {
   //white pieces
   b1: white_pawn,
   c2: white_pawn,
@@ -61,19 +62,107 @@ const pieces = {
   i8: black_rook
 }
 
+var isTurn = 'w'; // White pieces start first
+
 const getPieceName = (piece) => {
   return piece.split('/')[2].split('.')[0]; // Extract piece name from the URL and remove the file extension
 }
+
+const getPieceColor = (piece) => {
+  return getPieceName(piece).split('-')[0];
+}
+
+const axialToChessNotation = (q, r) => {
+  const letters = 'abcdefghikl'; // Letras para mapear
+  const boardOrigin = 5; // Tamaño del tablero
+  const letter = letters[boardOrigin + q]; // Q para mapear letras
+  var number = 0;
+  if (q === -5){
+    number = boardOrigin - r + Math.abs(q) - 5;
+  }
+  else if (q === -4 || q === 2){
+    number = boardOrigin - r + Math.abs(q) - 4;
+  }
+  else if (q === -3){ 
+    number = boardOrigin - r + Math.abs(q) - 3;
+  }
+  else if (q === -2 || q === 1){
+    number = boardOrigin - r + Math.abs(q) - 2;
+  }
+  else if (q === -1){
+    number = boardOrigin - r + Math.abs(q) - 1;
+  }
+  else if (q === 0){
+    number = boardOrigin - r + Math.abs(q);
+  }
+  else if (q === 3){
+    number = boardOrigin - r + Math.abs(q) - 6;
+  }
+  else if (q === 4){
+    number = boardOrigin - r + Math.abs(q) - 8;
+  }
+  else if (q === 5){
+    number = boardOrigin - r + Math.abs(q) - 10;
+  }
+  return `${letter}${number}`;
+};
+
+const isPathClear = (fromQ, fromR, fromS, toQ, toR, toS) => {
+  const qStep = Math.sign(toQ - fromQ);
+  const rStep = Math.sign(toR - fromR);
+  const sStep = Math.sign(toS - fromS);
+
+  let q = fromQ + qStep;
+  let r = fromR + rStep;
+  let s = fromS + sStep;
+
+  while (q !== toQ || r !== toR || s !== toS) {
+    const hex = `${q},${r},${s}`;
+    const chessNotation = axialToChessNotation(q, r-1);
+    
+    if (pieces[chessNotation]) {
+      toast.error("Hay una pieza en el camino");
+      return false; // Path is not clear
+    }
+
+    q += qStep;
+    r += rStep;
+    s += sStep;
+  }
+
+  const fromChessNotation = axialToChessNotation(fromQ, fromR-1);
+  const toChessNotation = axialToChessNotation(toQ, toR-1);
+
+  if (pieces[fromChessNotation]) {
+    console.log("Moving piece", getPieceName(pieces[fromChessNotation]), "from", fromChessNotation, "to", toChessNotation);
+    pieces[toChessNotation] = pieces[fromChessNotation];
+    delete pieces[fromChessNotation];
+  }
+
+  isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
+  return true; // Path is clear
+};
 
 //Piece movements
 const validMove = (piece, fromHex, toHex, fromQ, fromR, fromS, toQ, toR, toS) => {
   const pieceType = getPieceName(piece).split("-")[1]; // Extract piece type (e.g., 'pawn', 'rook')
   console.log("Validating move for", pieceType, "from", "Q", fromQ, "R", fromR, "S", fromS, "to", "Q", toQ, "R", toR, "S", toS);
+  var movementName = pieceType[0].toUpperCase() + toHex;
+  console.log("Movement name", movementName);
+
+  // Check if it's the turn of the piece color
+  if (getPieceColor(piece) !== isTurn) {
+    toast.error("No es tu turno");
+    console.log("turn", isTurn);
+    return false;
+  }
+
+
 
   switch (pieceType) {
 
     case 'pawn':
-      return isValidPawnMove(piece, fromQ, fromR, toQ, toR);
+      return isValidPawnMove(piece, fromQ, fromR, fromS, toQ, toR, toS);
     case 'rook':
       return isValidRookMove(fromQ, fromR, fromS, toQ, toR, toS);
     case 'knight':
@@ -89,81 +178,90 @@ const validMove = (piece, fromHex, toHex, fromQ, fromR, fromS, toQ, toR, toS) =>
   }
 }
 
-const isValidPawnMove = (piece, fromQ, fromR, toQ, toR) => {
+const isValidPawnMove = (piece, fromQ, fromR, fromS, toQ, toR, toS) => {
   //Only move one square forward
   piece = getPieceName(piece).split("-")[0];
   if (piece === "w" && toQ === fromQ && toR === fromR - 1) {
-    return true;
+    return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
   }
-  return (toQ === fromQ && toR === fromR + 1);
+  else if (toQ === fromQ && toR === fromR + 1){
+    return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
+  }
+  else {
+    toast.error("Movimiento inválido");
+    return false;
+  }
 }
 
 const isValidRookMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
   // Vertical movement
-  if (fromQ === toQ && fromR !== toR && fromS !== toS) {
-    return true;
+  if (fromQ !== toQ && fromR !== toR && fromS !== toS) {
+    toast.error("Movimiento inválido");
+    return false; // Rook moves in straight lines
   }
-
-  // Diagonal movement (type 1)
-  if (fromR === toR && fromS != toS && fromQ !== toQ) {
-    return true;
-  }
-
-  // Diagonal movement (type 2)
-  if (fromS === toS && fromR != toR && fromQ !== toQ) {
-    return true;
-  }
-  toast.error("Movimiento inválido");
-  return false;
+  return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
+  
 }
 
 const isValidKnightMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
   // L shape movement (Superior left)
   if (toQ === fromQ - 1 && toR === fromR - 2 && toS === fromS + 3) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Superior right)
   if (toQ === fromQ + 1 && toR === fromR - 3 && toS === fromS + 2) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Upper left up)
   if (toQ === fromQ - 2 && toR === fromR -1 && toS === fromS + 3) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Upper left down)
   if (toQ === fromQ - 3 && toR === fromR + 1 && toS === fromS + 2) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Upper right up)
   if (toQ === fromQ + 2 && toR === fromR - 3 && toS === fromS + 1) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Upper right down)
   if (toQ === fromQ + 3 && toR === fromR - 2 && toS === fromS + 1) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Lower left up)
   if (toQ === fromQ - 3 && toR === fromR + 2 && toS === fromS + 1) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Lower left down)
   if (toQ === fromQ - 2 && toR === fromR + 3 && toS === fromS - 1) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Lower right up)
   if (toQ === fromQ + 3 && toR === fromR - 1 && toS === fromS - 2) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Lower right down)
   if (toQ === fromQ + 2 && toR === fromR + 1 && toS === fromS - 3) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Inferior left)
   if (toQ === fromQ - 1 && toR === fromR + 3 && toS === fromS - 2) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   // L shape movement (Inferior right)
   if (toQ === fromQ + 1 && toR === fromR + 2 && toS === fromS - 3) {
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
     return true;
   }
   
@@ -183,7 +281,7 @@ const isValidBishopMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
     toR === fromR-4 && toS === fromS-4 && toQ !== fromQ ||
     toR === fromR+5 && toS === fromS+5 && toQ !== fromQ ||
     toR === fromR-5 && toS === fromS-5 && toQ !== fromQ) {
-    return true;
+    return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
   }
   // Diagonal upLeft-downRight movement
   if (toQ === fromQ+1 && toR === fromR+1 && toS === fromS-2 || 
@@ -196,7 +294,7 @@ const isValidBishopMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
     toQ === fromQ-4 && toR === fromR-4 && toS === fromS+8 ||
     toQ === fromQ+5 && toR === fromR+5 && toS === fromS-10 ||
     toQ === fromQ-5 && toR === fromR-5 && toS === fromS+10) {
-    return true;
+    return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
   }
   // Diagonal upRight-downLeft movement
   if (toQ === fromQ-1 && toS === fromS-1 && toR === fromR+2 || 
@@ -209,7 +307,7 @@ const isValidBishopMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
     toQ === fromQ+4 && toS === fromS+4 && toR === fromR-8 ||
     toQ === fromQ-5 && toS === fromS-5 && toR === fromR+10 ||
     toQ === fromQ+5 && toS === fromS+5 && toR === fromR-10) {
-    return true;
+    return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
   }
 
   toast.error("Movimiento inválido");
@@ -224,7 +322,7 @@ const isValidKingMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
     toQ === fromQ-1 && toR === fromR-1 && toS === fromS+2 ||
     toQ === fromQ-1 && toS === fromS-1 && toR === fromR+2 || //Diagonal upRight-downLeft movement
     toQ === fromQ+1 && toS === fromS+1 && toR === fromR-2 ) {
-    return true;
+    return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
   }
   //First rook movement
   if (toQ === fromQ && toR === fromR+1 && toS === fromS-1 || //Vertical movement
@@ -233,7 +331,7 @@ const isValidKingMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
     toQ === fromQ+1 && toR === fromR && toS === fromS-1||
     toQ === fromQ-1 && toR === fromR+1 && toS === fromS || //Upright - Downleft movement
     toQ === fromQ+1 && toR === fromR-1 && toS === fromS) {
-    return true;
+    return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
   }
   toast.error("Movimiento inválido");
   return false;
@@ -244,6 +342,7 @@ const HexagonalChessBoard = () => {
   const boardRadius = 5;
 
   const [_, setRender] = useState(false);
+  
   // Crear hexagonos
   for (let q = -boardRadius; q <= boardRadius; q++) {
     for (let r = Math.max(-boardRadius, -q - boardRadius); r <= Math.min(boardRadius, -q + boardRadius); r++) {
@@ -252,40 +351,7 @@ const HexagonalChessBoard = () => {
     }
   }
 
-  const axialToChessNotation = (q, r) => {
-    const letters = 'abcdefghikl'; // Letras para mapear
-    const boardOrigin = 5; // Tamaño del tablero
-    const letter = letters[boardOrigin + q]; // Q para mapear letras
-    var number = 0;
-    if (q === -5){
-      number = boardOrigin - r + Math.abs(q) - 5;
-    }
-    else if (q === -4 || q === 2){
-      number = boardOrigin - r + Math.abs(q) - 4;
-    }
-    else if (q === -3){ 
-      number = boardOrigin - r + Math.abs(q) - 3;
-    }
-    else if (q === -2 || q === 1){
-      number = boardOrigin - r + Math.abs(q) - 2;
-    }
-    else if (q === -1){
-      number = boardOrigin - r + Math.abs(q) - 1;
-    }
-    else if (q === 0){
-      number = boardOrigin - r + Math.abs(q);
-    }
-    else if (q === 3){
-      number = boardOrigin - r + Math.abs(q) - 6;
-    }
-    else if (q === 4){
-      number = boardOrigin - r + Math.abs(q) - 8;
-    }
-    else if (q === 5){
-      number = boardOrigin - r + Math.abs(q) - 10;
-    }
-    return `${letter}${number}`;
-  };
+  
 
   const movePiece = (fromHex, toHex,  fromQ, fromR, fromS, toQ, toR, toS) => {
     console.log("Moving piece",getPieceName(pieces[fromHex]),"from", fromHex, "to", toHex);

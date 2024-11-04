@@ -75,7 +75,7 @@ app.post("/Login", JsonParser, function (req, res) {
         if (!user) {
             return res.status(400).send('Usuario no encontrado');
         }
-        var token = jwt.sign({ id: user.id, username: user.username, email: user.email, elo: user.rating }, JWT_SECRET, { expiresIn: '72h' });
+        var token = jwt.sign({ id: user.id_usuario, username: user.username, email: user.email, elo: user.rating }, JWT_SECRET, { expiresIn: '72h' });
         res.json({ token: token });
     });
 });
@@ -113,5 +113,57 @@ app.get("/LoginAdm", JsonParser, function (req, res) {
 app.get("/Adm", function (req, res) {
     connection.query('SELECT * FROM usuarios', function (err, rows, fields) {
         res.send(JSON.stringify(rows));
+    });
+});
+//Lobbies
+app.get("/Lobbies", function (req, res) {
+    connection.query('SELECT * FROM lobbies', function (err, rows, fields) {
+        res.send(JSON.stringify(rows));
+    });
+});
+app.post("/Lobbies", JsonParser, function (req, res) {
+    var id = req.body.id;
+    var user1 = req.body.user1;
+    var elo1 = req.body.elo1;
+    connection.query('INSERT INTO lobbies(id_Partida,id_player_white,iniciado,elo_white) values(?,?,0,?)', [id, user1, elo1], function (err, rows, fields) {
+        res.send(JSON.stringify(rows));
+    });
+});
+app.put("/Lobbies/:id_Partida", JsonParser, function (req, res) {
+    var id_Partida = req.params.id_Partida;
+    var iniciado = req.body.iniciado;
+    var user2 = req.body.user2;
+    connection.query('UPDATE lobbies SET iniciado = ?, id_player_black = ? WHERE id_Partida = ?', [iniciado, user2, id_Partida], function (err, result) {
+        if (err) {
+            console.error('Error updating lobby:', err);
+            res.status(500).send('Error updating lobby');
+        }
+        else {
+            res.send('Lobby updated successfully');
+        }
+    });
+});
+app.delete("/Lobbies/:id_Partida", function (req, res) {
+    var id_Partida = req.params.id_Partida;
+    connection.query('DELETE FROM lobbies WHERE id_Partida = ?', [id_Partida], function (err, result) {
+        if (err) {
+            console.error('Error deleting lobby:', err);
+            res.status(500).send('Error deleting lobby');
+        }
+        else {
+            res.send('Lobby deleted successfully');
+        }
+    });
+});
+app.get("/Lobbies/:id_Partida", function (req, res) {
+    var id_Partida = req.params.id_Partida;
+    connection.query('SELECT * FROM lobbies WHERE id_Partida = ?', [id_Partida], function (err, result) {
+        if (err) {
+            console.error('Error getting lobby:', err);
+            res.status(500).send('Error getting lobby');
+        }
+        else {
+            res.send(result);
+        }
     });
 });

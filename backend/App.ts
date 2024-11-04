@@ -89,7 +89,7 @@ app.post("/Login",JsonParser,(req:any,res:any)=>{
       if (!user) {
         return res.status(400).send('Usuario no encontrado');
       }
-    const token = jwt.sign({ id: user.id, username: user.username, email: user.email, elo: user.rating }, JWT_SECRET, { expiresIn: '72h' });
+    const token = jwt.sign({ id: user.id_usuario, username: user.username, email: user.email, elo: user.rating }, JWT_SECRET, { expiresIn: '72h' });
     res.json({ token });
   });
 })
@@ -137,3 +137,60 @@ app.get("/Adm",(req:any,res:any)=>{
       res.send(JSON.stringify(rows));
   });
 })
+
+//Lobbies
+app.get("/Lobbies",(req:any,res:any)=>{
+  connection.query('SELECT * FROM lobbies',function(err:any,rows:any,fields:any){
+      res.send(JSON.stringify(rows));
+  });
+})
+
+app.post("/Lobbies",JsonParser,(req:any,res:any)=>{
+  let id=req.body.id;
+  let user1=req.body.user1;
+  let elo1=req.body.elo1;
+  connection.query('INSERT INTO lobbies(id_Partida,id_player_white,iniciado,elo_white) values(?,?,0,?)',[id,user1,elo1],function(err:any,rows:any,fields:any){
+    res.send(JSON.stringify(rows));
+  });
+})
+
+app.put("/Lobbies/:id_Partida",JsonParser,(req:any,res:any)=>{
+  let id_Partida = req.params.id_Partida;
+  let iniciado = req.body.iniciado;
+  let user2 = req.body.user2;
+
+  connection.query('UPDATE lobbies SET iniciado = ?, id_player_black = ? WHERE id_Partida = ?', [iniciado,user2, id_Partida], function(err: any, result: any) {
+    if (err) {
+      console.error('Error updating lobby:', err);
+      res.status(500).send('Error updating lobby');
+    } else {
+      res.send('Lobby updated successfully');
+    }
+  });
+})
+
+app.delete("/Lobbies/:id_Partida", (req: any, res: any) => {
+  let id_Partida = req.params.id_Partida;
+
+  connection.query('DELETE FROM lobbies WHERE id_Partida = ?', [id_Partida], function (err: any, result: any) {
+    if (err) {
+      console.error('Error deleting lobby:', err);
+      res.status(500).send('Error deleting lobby');
+    } else {
+      res.send('Lobby deleted successfully');
+    }
+  });
+});
+
+app.get("/Lobbies/:id_Partida", (req: any, res: any) => {
+  let id_Partida = req.params.id_Partida;
+
+  connection.query('SELECT * FROM lobbies WHERE id_Partida = ?', [id_Partida], function (err: any, result: any) {
+    if (err) {
+      console.error('Error getting lobby:', err);
+      res.status(500).send('Error getting lobby');
+    } else {
+      res.send(result);
+    }
+  });
+});

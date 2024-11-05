@@ -45,6 +45,21 @@ app.listen(configuracion, function () {
 app.get('/', function (req, res) {
     console.log('GET /');
 });
+app.get('/Usuarios/:id', JsonParser, function (req, res) {
+    var id = req.params.id;
+    if (id === undefined || id === null) {
+        return res.status(400).send('id_usuario is undefined');
+    }
+    connection.query('SELECT username, rating FROM usuarios WHERE id_usuario = ?', [id], function (err, result) {
+        if (err) {
+            console.error('Error getting user:', err);
+            res.status(500).send('Error getting user');
+        }
+        else {
+            res.send(result);
+        }
+    });
+});
 app.get("/Registro", function (req, res) {
     connection.query('SELECT username, email FROM usuarios', function (err, rows, fields) {
         res.send(JSON.stringify(rows));

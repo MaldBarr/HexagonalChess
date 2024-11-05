@@ -57,6 +57,21 @@ app.get('/', (req, res) => {
   console.log('GET /');
 });
 
+app.get('/Usuarios/:id',JsonParser,(req:any,res:any) => {
+  let id = req.params.id;
+  if (id === undefined || id === null) {
+    return res.status(400).send('id_usuario is undefined');
+  }
+  connection.query('SELECT username, rating FROM usuarios WHERE id_usuario = ?', [id], function (err:any,result:any) {
+    if (err) {
+      console.error('Error getting user:', err);
+      res.status(500).send('Error getting user');
+    } else {
+      res.send(result);
+    }
+  });
+});
+
 app.get("/Registro",(req:any,res:any)=>{
   connection.query('SELECT username, email FROM usuarios',function(err:any,rows:any,fields:any){
       res.send(JSON.stringify(rows));

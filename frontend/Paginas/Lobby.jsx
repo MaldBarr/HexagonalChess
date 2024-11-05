@@ -17,8 +17,6 @@ function Lobby() {
                 .then(response => {
                     const lobby = response.data[0];
                     console.log('Lobby status:', lobby);
-                    console.log('Lobby iniciado type:', typeof lobby.iniciado);
-                    console.log('Lobby iniciado value:', lobby.iniciado);
                     if (lobby.iniciado === 1) {
                         setIniciado(1);
                         clearInterval(interval);

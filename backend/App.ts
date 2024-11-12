@@ -72,6 +72,22 @@ app.get('/Usuarios/:id',JsonParser,(req:any,res:any) => {
   });
 });
 
+app.put('/Usuarios/:id/Elo',JsonParser,(req:any,res:any) => {
+  let id = req.params.id;
+  let rating = req.body.rating;
+  if (id === undefined || id === null) {
+    return res.status(400).send('id_usuario is undefined');
+  }
+  connection.query('UPDATE usuarios SET rating = ? WHERE id_usuario = ?', [rating, id], function (err:any,result:any) {
+    if (err) {
+      console.error('Error updating user:', err);
+      res.status(500).send('Error updating user');
+    } else {
+      res.send('User updated successfully');
+    }
+  });
+});
+
 app.get("/Registro",(req:any,res:any)=>{
   connection.query('SELECT username, email FROM usuarios',function(err:any,rows:any,fields:any){
       res.send(JSON.stringify(rows));
@@ -209,3 +225,17 @@ app.get("/Lobbies/:id_Partida", (req: any, res: any) => {
     }
   });
 });
+
+//Resultado final de la partida
+app.post("/Lobbies/:id_Partida/end",JsonParser,(req:any,res:any)=>{
+  let resultado=req.body.resultado;
+  let id_Partida=req.params.id_Partida;
+  connection.query('UPDATE lobbies SET resultado = ? WHERE id_Partida = ?', [resultado,id_Partida], function(err: any, result: any) {
+    if (err) {
+      console.error('Error updating lobby:', err);
+      res.status(500).send('Error updating lobby');
+    } else {
+      res.send('Lobby updated successfully');
+    }
+  });
+})

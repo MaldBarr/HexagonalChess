@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import Game from '../Tablero/ConstructorTablero.jsx';
+import HexagonalChessBoard from '/Tablero/GridHexagonal';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import axios from 'axios';
@@ -11,11 +11,18 @@ import blackPawn from '../Figuras/b-pawn.png';
 import {useState} from 'react';
 import {Link} from 'react-router-dom';
 
+import { useNavigate } from 'react-router-dom';
+
+import calcularElo from '../Modulos/Elo';
+
 function Juego() {
+    const navigate = useNavigate();
     const {id} = useParams();
     const [lobby, setLobby] = useState(null);
     const [whiteInfo, setWhiteInfo] = useState(null);
     const [blackInfo, setBlackInfo] = useState(null);
+
+    const [checkKingCaptured, setCheckKingCaptured] = useState({ kingCaptured: false, color: "" });
 
     //Info del juego
     useEffect(() => {
@@ -59,25 +66,109 @@ function Juego() {
         }
     }, [lobby]);
 
+    //End of the game
+    useEffect(() => {
+        if (checkKingCaptured.kingCaptured) {
+            axios.post(`http://localhost:3000/Lobbies/${id}/end`, {
+                resultado: checkKingCaptured.color === 'white' ? '2' : '1' //2 para victoria del equipo negro, 1 para victoria del equipo blanco
+            })
+            .then(response => {
+                console.log('Game ended:', response.data);
+            })
+            .catch(error => {
+                console.error('Error ending game:', error);
+            });
+
+            //Cambios en el Elo de los jugadores
+            var EloWhite = whiteInfo.rating;
+            var EloBlack = blackInfo.rating;
+            console.log("calculando elo")
+            if (checkKingCaptured.color === 'white'){
+                EloWhite = calcularElo(EloWhite,EloBlack,0)
+                EloBlack = calcularElo(EloBlack,EloWhite,1)
+                console.log("new elo white",EloWhite,"new elo black",EloBlack)
+            } else {
+                EloWhite = calcularElo(EloWhite,EloBlack,1)
+                EloBlack = calcularElo(EloBlack,EloWhite,0)
+                console.log("new elo white",EloWhite,"new elo black",EloBlack)
+            }
+
+            axios.put(`http://localhost:3000/Usuarios/${lobby.id_player_white}/Elo`, {
+                rating: EloWhite
+            })
+            .then(response => {
+                console.log('White player rating updated:', response.data);
+            })
+            .catch(error => {
+                console.error('Error updating white player rating:', error);
+            });
+
+            axios.put(`http://localhost:3000/Usuarios/${lobby.id_player_black}/Elo`, {
+                rating: EloBlack
+            })
+            .then(response => {
+                console.log('Black player rating updated:', response.data);
+            })
+            .catch(error => {
+                console.error('Error updating black player rating:', error);
+            });
+
+            navigate('/Salas');
+        }
+    }, [checkKingCaptured]);
+
+    const forfeit = () => {
+        //Cual jugador se rinde
+        var playerForfeiting = lobby.id_player_white === token.id ? 'white' : 'black';
+        
+        //Cambios en el Elo de los jugadores
+        var EloWhite = whiteInfo.rating;
+        var EloBlack = blackInfo.rating;
+        console.log("calculando elo")
+        if (playerForfeiting === 'white'){
+            EloWhite = calcularElo(EloWhite,EloBlack,0)
+            EloBlack = calcularElo(EloBlack,EloWhite,1)
+            console.log("new elo white",EloWhite,"new elo black",EloBlack)
+        } else {
+            EloWhite = calcularElo(EloWhite,EloBlack,1)
+            EloBlack = calcularElo(EloBlack,EloWhite,0)
+            console.log("new elo white",EloWhite,"new elo black",EloBlack)
+        }
+
+        axios.post(`http://localhost:3000/Lobbies/${id}/end`, {
+            resultado: playerForfeiting === 'white' ? '2' : '1' //2 para victoria del equipo negro, 1 para el equipo blanco
+        })
+        .then(response => {
+            console.log('Game ended:', response.data);
+        })
+        .catch(error => {
+            console.error('Error ending game:', error);
+        });
+        navigate('/Salas');
+    }
+
     return (
-        <div>
-            <section style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <img src={whitePawn} alt="White Pawn"/>
+        <div style={{ width: '100vw' }}>
+            <section style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <section style={{ display: 'flex', boxShadow: lobby && lobby.turn === 'white' ? '0 0 10px 5px yellow' : 'none' }}>
+                    <img src={whitePawn} alt="White Pawn" />
                     <div>
                         <h2>{whiteInfo ? whiteInfo.username : 'Loading...'}</h2>
                         <p>{whiteInfo ? whiteInfo.rating : 'Loading...'}</p>
                     </div>
-                    <div className="Separador"></div>
-                    <img src={blackPawn} alt="Black Pawn"/>
+                </section>
+                <section style={{ display: 'flex', boxShadow: lobby && lobby.turn === 'black' ? '0 0 10px 5px yellow' : 'none' }}>
+                    <img src={blackPawn} alt="Black Pawn" />
                     <div>
                         <h2>{blackInfo ? blackInfo.username : 'Loading...'}</h2>
                         <p>{blackInfo ? blackInfo.rating : 'Loading...'}</p>
                     </div>
+                </section>
+                <Link onClick={forfeit}><button className="forfeit-button">Rendirse</button></Link>
             </section>
             <DndProvider backend={HTML5Backend}>
-                <Game />
+                <HexagonalChessBoard  checkKingCaptured={checkKingCaptured} setCheckKingCaptured={setCheckKingCaptured} />
             </DndProvider>
-            <Link to="/Salas"><button className="forfeit-button">Rendirse</button></Link>
         </div>
     )
 }

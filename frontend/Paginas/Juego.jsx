@@ -194,7 +194,7 @@ function Juego() {
             </section>
             <section style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                 <DndProvider backend={HTML5Backend}>
-                    {userInfo ? (<HexagonalChessBoard  checkKingCaptured={checkKingCaptured} setCheckKingCaptured={setCheckKingCaptured} roomId={roomId} username={userInfo.username}/>) : (<></>)}
+                    {userInfo && lobby ? (<HexagonalChessBoard checkKingCaptured={checkKingCaptured} setCheckKingCaptured={setCheckKingCaptured} roomId={roomId} username={userInfo.username} PColor={lobby && lobby.id_player_white === userInfo.id ? 'w' : 'b'} />) : (<></>)}
                 </DndProvider>
                 {userInfo ? (<Chat roomId={roomId} username={userInfo.username}/>) : (<></>)}
             </section>

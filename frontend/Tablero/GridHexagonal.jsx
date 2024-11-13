@@ -350,7 +350,7 @@ const isValidKingMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
   return false;
 }
 
-const HexagonalChessBoard = ({ checkKingCaptured, setCheckKingCaptured, roomId, username }) => {
+const HexagonalChessBoard = ({ checkKingCaptured, setCheckKingCaptured, roomId, username, PColor }) => {
   const hexagons = [];
   const boardRadius = 5;
   const [boardState, setBoardState] = useState({ pieces: {} });
@@ -389,6 +389,7 @@ const sendChessMove = (fromHex, toHex, piece, turn) => {
   const movePiece = (fromHex, toHex,  fromQ, fromR, fromS, toQ, toR, toS) => {
     console.log("Moving piece",getPieceName(pieces[fromHex]),"from", fromHex, "to", toHex);
     if (!pieces[fromHex]) return;  // No piece to move from the original hex
+    if (!CheckPlayerTurn()) return; // Check if it's the player's turn
     if (pieces[toHex] && getPieceName(pieces[toHex]).split('-')[0] === getPieceName(pieces[fromHex]).split('-')[0]){
       console.log(getPieceName(pieces[toHex]),"can't get captured by",getPieceName(pieces[fromHex]));
       toast.error("No puedes capturar tus propias piezas");
@@ -439,7 +440,13 @@ const sendChessMove = (fromHex, toHex, piece, turn) => {
   }
 
   //Restrict movement of pieces for the player who is not in turn
-  
+  const CheckPlayerTurn = () => {
+    console.log("Player color", PColor);
+    if (isTurn === PColor) {
+      return true;
+    }
+    return false;
+  }
 
   return (
     <HexGrid width={600} height={700}>

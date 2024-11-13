@@ -116,7 +116,7 @@ const DroppableHexagon = ({ q, r, s, movePiece, hexNotation, children }) => {
                 {children}
             </foreignObject>
             <Text style={{ fontSize: '1.5px', fill: 'black' }} x={0} y={3}>
-                {hexNotation} {q},{r},{s}
+                {hexNotation}
             </Text> 
         </Hexagon>
     </g>

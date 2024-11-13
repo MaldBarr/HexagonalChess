@@ -94,10 +94,14 @@ function Reglas() {
             <div className='Rules'>
                 <section>
                     <h2>Estados de finalizacion:</h2>
+                    <h4>Por implementar:</h4>
                     <p>Jaque mate: Victoria de uno de los 2 lados, donde el rey de uno de los jugadores está siendo capturado y no tiene movimientos que lo saquen de la captura</p>
                     <p>Tablas (Stale mate): Empate, se otorga ¾ de la victoria para el jugador que realiza el stale mate, esta situación sucede cuando el rey no tiene lugares para moverse ya que implican su captura.</p>
-                    <p>Abandono: Se otorga victoria al jugador que sigue en juego</p>
                     <p>Finalizacion por limite de tiempo: Se otorga victoria al jugador que aun posee tiempo para jugar</p>
+                    <h4>Implementados:</h4>
+                    <p>Victoria por captura del rey: Se otorga victoria al jugador que captura el rey del oponente</p>
+                    <p>Abandono: Se otorga victoria al jugador que sigue en juego</p>
+                    
                 </section>
                 <section className='SecImagen'>
                     <img className='RulesIMG' src="/Figuras/g-queen.png" alt="Reina (Queen)" />

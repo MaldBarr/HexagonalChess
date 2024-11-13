@@ -420,11 +420,6 @@ const sendChessMove = (fromHex, toHex, piece, turn) => {
   const updateBoardState = (move) => {
     const { fromHex, toHex, piece, turn } = move;
     console.log("Updating board state with move", move);
-    pieces[toHex] = pieces[fromHex];
-    delete pieces[fromHex];
-    isTurn = turn; // Change turn
-    console.log(turn," Turno de ", isTurn);
-    setRender((prev) => !prev);
 
     //Check if king is captured
     if (pieces[toHex] && getPieceName(pieces[toHex]).split('-')[1] === 'king') {
@@ -437,6 +432,12 @@ const sendChessMove = (fromHex, toHex, piece, turn) => {
         toast.success("Blancas ganan");
       }
     }
+
+    pieces[toHex] = pieces[fromHex];
+    delete pieces[fromHex];
+    isTurn = turn; // Change turn
+    console.log(turn," Turno de ", isTurn);
+    setRender((prev) => !prev);
   }
 
   //Restrict movement of pieces for the player who is not in turn
@@ -445,6 +446,7 @@ const sendChessMove = (fromHex, toHex, piece, turn) => {
     if (isTurn === PColor) {
       return true;
     }
+    toast.error("No es tu turno");
     return false;
   }
 

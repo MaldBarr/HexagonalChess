@@ -30,15 +30,18 @@ function Salas() {
     }, []);
 
     useEffect(() => {
-        // Fetch lobby data from the backend
-        axios.get('http://localhost:3000/Lobbies')
-            .then(response => {
-                setLobbies(response.data);
-                console.log('Lobbies fetched:', response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching lobbies:', error);
-            });
+        const interval = setInterval(() => {
+            axios.get('http://localhost:3000/Lobbies')
+                .then(response => {
+                    setLobbies(response.data);
+                    console.log('Lobbies updated:', response.data);
+                })
+                .catch(error => {
+                    console.error('Error updating lobbies:', error);
+                });
+        }, 5000);
+
+        return () => clearInterval(interval);
     }, []);
 
     const createLobby = () => {

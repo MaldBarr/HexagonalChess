@@ -1,10 +1,10 @@
 import React from 'react';
-import { HexGrid, Layout, Hexagon, Text } from 'react-hexgrid';
-import { useDrop } from 'react-dnd';
+import { HexGrid, Layout } from 'react-hexgrid';
 import DraggablePiece from './DragPiece';
 import DroppableHexagon from './DropPiece';
-import { useState, createContext, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import io from 'socket.io-client';
 
 import black_bishop from '../Figuras/b-bishop.png';
 import black_knight from '../Figuras/b-knight.png';
@@ -20,6 +20,9 @@ import white_pawn from '../Figuras/w-pawn.png';
 import black_pawn from '../Figuras/b-pawn.png';
 import axios from 'axios';
 
+const socket = io('http://localhost:4000', {
+  transports: ['websocket', 'polling'],
+});
 
 let pieces = {
   //white pieces
@@ -63,7 +66,7 @@ let pieces = {
   i8: black_rook
 }
 
-var isTurn = 'w'; // White pieces start first
+var isTurn = 'w';
 
 const getPieceName = (piece) => {
   return piece.split('/')[2].split('.')[0]; // Extract piece name from the URL and remove the file extension
@@ -143,7 +146,6 @@ const isPathClear = (fromQ, fromR, fromS, toQ, toR, toS) => {
     r += rStep;
     s += sStep;
   }
-
   isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
   return true; // Path is clear
 };
@@ -162,10 +164,7 @@ const validMove = (piece, fromHex, toHex, fromQ, fromR, fromS, toQ, toR, toS) =>
     return false;
   }
 
-
-
   switch (pieceType) {
-
     case 'pawn':
       return isValidPawnMove(piece, fromQ, fromR, fromS, toQ, toR, toS);
     case 'rook':
@@ -189,14 +188,14 @@ const isValidPawnMove = (piece, fromQ, fromR, fromS, toQ, toR, toS) => {
     if (toQ === fromQ && toR === fromR - 1) {
       return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
     } else if ((toQ === fromQ - 1 || toQ === fromQ + 1) && (toR === fromR - 1 || toR === fromR) && pieces[axialToChessNotation(toQ, toR - 1)]) {
-      isTurn = isTurn === 'w' ? 'b' : 'w';
+      isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
       return true; // Capture diagonally
     }
   } else {
     if (toQ === fromQ && toR === fromR + 1) {
       return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
     } else if ((toQ === fromQ - 1 || toQ === fromQ + 1) && (toR === fromR + 1 || toR === fromR) && pieces[axialToChessNotation(toQ, toR - 1)]) {
-      isTurn = isTurn === 'w' ? 'b' : 'w';
+      isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
       return true; // Capture diagonally
     }
   }
@@ -292,7 +291,8 @@ const isValidBishopMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
     (toR === fromR-4 && toS === fromS-4 && toQ !== fromQ) ||
     (toR === fromR+5 && toS === fromS+5 && toQ !== fromQ) ||
     (toR === fromR-5 && toS === fromS-5 && toQ !== fromQ)) {
-      return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
+      isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
+      return true;
   }
   // Diagonal upLeft-downRight movement
   if (toQ === fromQ+1 && toR === fromR+1 && toS === fromS-2 || 
@@ -305,7 +305,8 @@ const isValidBishopMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
     toQ === fromQ-4 && toR === fromR-4 && toS === fromS+8 ||
     toQ === fromQ+5 && toR === fromR+5 && toS === fromS-10 ||
     toQ === fromQ-5 && toR === fromR-5 && toS === fromS+10) {
-      return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
+      isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
+      return true;
   }
   // Diagonal upRight-downLeft movement
   if (toQ === fromQ-1 && toS === fromS-1 && toR === fromR+2 || 
@@ -318,7 +319,8 @@ const isValidBishopMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
     toQ === fromQ+4 && toS === fromS+4 && toR === fromR-8 ||
     toQ === fromQ-5 && toS === fromS-5 && toR === fromR+10 ||
     toQ === fromQ+5 && toS === fromS+5 && toR === fromR-10) {
-      return isPathClear(fromQ, fromR, fromS, toQ, toR, toS);
+      isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
+      return true;
   }
 
   toast.error("Movimiento inválido");
@@ -348,11 +350,29 @@ const isValidKingMove = (fromQ, fromR, fromS, toQ, toR, toS) => {
   return false;
 }
 
-const HexagonalChessBoard = ({ checkKingCaptured, setCheckKingCaptured }) => {
+const HexagonalChessBoard = ({ checkKingCaptured, setCheckKingCaptured, roomId, username }) => {
   const hexagons = [];
   const boardRadius = 5;
+  const [boardState, setBoardState] = useState({ pieces: {} });
 
+  useEffect(() => {
+    // Join the room
+    socket.emit('joinRoom', roomId);
 
+    socket.on('chessMove', (move) => {
+        // Update the board state with the received move
+        updateBoardState(move);
+    });
+
+    return () => {
+        socket.off('chessMove');
+    };
+  }, [roomId]);
+
+const sendChessMove = (fromHex, toHex, piece, turn) => {
+    const move = { fromHex, toHex, piece, turn, username };
+    socket.emit('chessMove', { roomId, move });
+  };
 
   const [_, setRender] = useState(false);
   
@@ -389,11 +409,37 @@ const HexagonalChessBoard = ({ checkKingCaptured, setCheckKingCaptured }) => {
     }
 
     if (!validMove(pieces[fromHex], fromHex, toHex,fromQ, fromR, fromS, toQ, toR, toS)) return; // Check if the move is valid
+    sendChessMove(fromHex, toHex, getPieceName(pieces[fromHex]), isTurn); // Send the move to the server
+    isTurn = isTurn === 'w' ? 'b' : 'w'; // Change turn
+    /*pieces[toHex] = pieces[fromHex];
+    delete pieces[fromHex];
+    setRender((prev) => !prev);*/
+  };
 
+  const updateBoardState = (move) => {
+    const { fromHex, toHex, piece, turn } = move;
+    console.log("Updating board state with move", move);
     pieces[toHex] = pieces[fromHex];
     delete pieces[fromHex];
+    isTurn = turn; // Change turn
+    console.log(turn," Turno de ", isTurn);
     setRender((prev) => !prev);
-  };
+
+    //Check if king is captured
+    if (pieces[toHex] && getPieceName(pieces[toHex]).split('-')[1] === 'king') {
+      console.log("King captured");
+      if (getPieceName(pieces[toHex]).split('-')[0] === 'w'){
+        setCheckKingCaptured({kingCaptured: true, color: "white"});
+        toast.success("Negras ganan");
+      } else {
+        setCheckKingCaptured({kingCaptured: true, color: "black"});
+        toast.success("Blancas ganan");
+      }
+    }
+  }
+
+  //Restrict movement of pieces for the player who is not in turn
+  
 
   return (
     <HexGrid width={600} height={700}>

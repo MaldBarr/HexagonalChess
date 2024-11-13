@@ -3,8 +3,18 @@ const mysql=require('mysql');
 const cors = require('cors');
 const bodyParser=require('body-parser');
 const jwt = require('jsonwebtoken');
+const http = require('http');
+const socketIo = require('socket.io');
 
 const app=express();
+
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: '*',
+    methods: ["GET", "POST"],
+  },
+});
 
 app.use(cors());
 
@@ -35,6 +45,36 @@ const authenticateToken = (req, res, next) => {
       next();
   });
 };
+
+//Socket.IO
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+    console.log(`User joined room: ${roomId}`);
+  });
+
+  // Handle chat messages for a specific room
+  socket.on('chatMessage', (data) => {
+    const { roomId, username,  text } = data;
+    io.to(roomId).emit('chatMessage', {username, text});
+  });
+
+  // Handle chess moves for a specific room
+  socket.on('chessMove', (data) => {
+    const { roomId, move } = data;
+    io.to(roomId).emit('chessMove', move);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
+
+server.listen(4000, () => {
+  console.log('Socket.IO server running on port 4000');
+});
 
 connection.connect(function(err:any) {
     if (err) {

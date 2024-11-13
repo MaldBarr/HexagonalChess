@@ -3,7 +3,16 @@ var mysql = require('mysql');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 var jwt = require('jsonwebtoken');
+var http = require('http');
+var socketIo = require('socket.io');
 var app = express();
+var server = http.createServer(app);
+var io = socketIo(server, {
+    cors: {
+        origin: '*',
+        methods: ["GET", "POST"],
+    },
+});
 app.use(cors());
 var JsonParser = bodyParser.json();
 var connection = mysql.createConnection({
@@ -28,6 +37,30 @@ var authenticateToken = function (req, res, next) {
         next();
     });
 };
+//Socket.IO
+io.on('connection', function (socket) {
+    console.log('A user connected');
+    socket.on('joinRoom', function (roomId) {
+        socket.join(roomId);
+        console.log("User joined room: ".concat(roomId));
+    });
+    // Handle chat messages for a specific room
+    socket.on('chatMessage', function (data) {
+        var roomId = data.roomId, username = data.username, text = data.text;
+        io.to(roomId).emit('chatMessage', { username: username, text: text });
+    });
+    // Handle chess moves for a specific room
+    socket.on('chessMove', function (data) {
+        var roomId = data.roomId, move = data.move;
+        io.to(roomId).emit('chessMove', move);
+    });
+    socket.on('disconnect', function () {
+        console.log('A user disconnected');
+    });
+});
+server.listen(4000, function () {
+    console.log('Socket.IO server running on port 4000');
+});
 connection.connect(function (err) {
     if (err) {
         console.error('Error conectando a la DB ' + err.stack);

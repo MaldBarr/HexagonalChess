@@ -4,6 +4,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import axios from 'axios';
 import {useParams} from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import whitePawn from '../Figuras/w-pawn.png';
 import blackPawn from '../Figuras/b-pawn.png';
@@ -12,8 +13,10 @@ import {useState} from 'react';
 import {Link} from 'react-router-dom';
 
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 import calcularElo from '../Modulos/Elo';
+import Chat from '../Modulos/Chat';
 
 function Juego() {
     const navigate = useNavigate();
@@ -21,6 +24,23 @@ function Juego() {
     const [lobby, setLobby] = useState(null);
     const [whiteInfo, setWhiteInfo] = useState(null);
     const [blackInfo, setBlackInfo] = useState(null);
+    const [userInfo, setUserInfo] = useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                console.log(decoded);
+                setUserInfo(decoded);
+            } catch (error) {
+                console.log("Error al decodificar el token", error);
+            }
+        }
+    }, []);
+
+
+    const roomId = id;
 
     const [checkKingCaptured, setCheckKingCaptured] = useState({ kingCaptured: false, color: "" });
 
@@ -119,7 +139,9 @@ function Juego() {
 
     const forfeit = () => {
         //Cual jugador se rinde
-        var playerForfeiting = lobby.id_player_white === token.id ? 'white' : 'black';
+        const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        var playerForfeiting = lobby.id_player_white === decoded.id ? 'white' : 'black';
         
         //Cambios en el Elo de los jugadores
         var EloWhite = whiteInfo.rating;
@@ -140,12 +162,16 @@ function Juego() {
         })
         .then(response => {
             console.log('Game ended:', response.data);
+            toast.success(`${playerForfeiting === 'white' ? 'Jugador Blanco' : 'Jugador negro'} se ha rendido.`)
+            navigate('/Salas');
         })
         .catch(error => {
             console.error('Error ending game:', error);
         });
-        navigate('/Salas');
     }
+
+    //Check si el otro jugador se rinde
+    
 
     return (
         <div style={{ width: '100vw' }}>
@@ -166,9 +192,12 @@ function Juego() {
                 </section>
                 <Link onClick={forfeit}><button className="forfeit-button">Rendirse</button></Link>
             </section>
-            <DndProvider backend={HTML5Backend}>
-                <HexagonalChessBoard  checkKingCaptured={checkKingCaptured} setCheckKingCaptured={setCheckKingCaptured} />
-            </DndProvider>
+            <section style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                <DndProvider backend={HTML5Backend}>
+                    {userInfo ? (<HexagonalChessBoard  checkKingCaptured={checkKingCaptured} setCheckKingCaptured={setCheckKingCaptured} roomId={roomId} username={userInfo.username}/>) : (<></>)}
+                </DndProvider>
+                {userInfo ? (<Chat roomId={roomId} username={userInfo.username}/>) : (<></>)}
+            </section>
         </div>
     )
 }

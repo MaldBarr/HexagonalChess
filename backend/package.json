@@ -6,7 +6,8 @@
     "express": "^4.21.0",
     "firebase": "^10.14.0",
     "jsonwebtoken": "^9.0.2",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@types/node": "^22.7.4",

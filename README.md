@@ -2,6 +2,8 @@
 
 **Creado por Carlos Sebastián Maldonado Barraza**
 
+![1731590210206](image/README/1731590210206.png "Chessboard")
+
 ## Sobre el proyecto
 
 Este proyecto busca ofrecer una nueva forma de jugar ajedrez manteniendo los aspectos populares del juego mientras se innova con un estilo que por muy popular que haya sido en épocas pasadas, no ha sido adaptado por las páginas populares de ajedrez.

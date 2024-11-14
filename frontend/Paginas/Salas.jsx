@@ -39,7 +39,7 @@ function Salas() {
                 .catch(error => {
                     console.error('Error updating lobbies:', error);
                 });
-        }, 5000);
+        }, 1000);
 
         return () => clearInterval(interval);
     }, []);
